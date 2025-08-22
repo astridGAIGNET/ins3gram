@@ -28,6 +28,16 @@ class Media extends Migration
                 'constraint' => ['user', 'recipe', 'step', 'ingredient', 'brand'],
                 'default' => 'user',
             ],
+            'title' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
+                'null' => false,
+            ],
+            'alt' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
+                'null' => false,
+            ],
             'created_at' => [
                 'type'       => 'DATETIME',
                 'null'       => true,
