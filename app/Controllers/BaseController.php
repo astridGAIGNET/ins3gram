@@ -74,6 +74,7 @@ abstract class BaseController extends Controller
      * @var array
      */
     protected $breadcrumb = [];
+    protected $menu = 'accueil';
 
 
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
@@ -100,6 +101,7 @@ abstract class BaseController extends Controller
             'menus' => $this->loadMenu($admin),
             'template_path' => $template_path,
             'breadcrumb' => $this->breadcrumb,
+            'localmenu' => $this->menu,
         ];
         return
             view($template_path . 'head', $headData)
