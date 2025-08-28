@@ -4,17 +4,18 @@ namespace App\Models;
 
 use App\Entities\User;
 use CodeIgniter\Model;
-
+use App\Traits\DataTableTrait;
 class UserModel extends Model
 {
+    use DataTableTrait;
+
     protected $table            = 'user';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'App\Entities\User';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
-    protected $allowedFields    = ['email', 'password', 'username', 'first_name', 'last_name', 'birthdate', 'id_permission'];
-
+    protected $allowedFields    = ['email','password','username','first_name','last_name', 'birthdate', 'id_permission'];
     // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
@@ -22,16 +23,37 @@ class UserModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    // Validation
-    protected $validationRules = [
-        'email'       => 'required|valid_email|max_length[255]|is_unique[user.email,id,{id}]',
-        'password'    => 'required|min_length[8]|max_length[255]',
-        'username'    => 'required|min_length[3]|max_length[255]|is_unique[user.username,id,{id}]',
-        'first_name'  => 'permit_empty|max_length[255]',
-        'last_name'   => 'permit_empty|max_length[255]',
-        'birthdate'   => 'required|valid_date',
-        'id_permission' => 'required|integer',
-    ];
+    protected $beforeInsert = ['setCreateRules'];
+    protected $beforeUpdate = ['setUpdateRules'];
+
+    protected function setCreateRules(array $data)
+    {
+        $this->validationRules = [
+            'email'    => 'required|valid_email|max_length[255]|is_unique[user.email]',
+            'password' => 'required|min_length[8]|max_length[255]',
+            'username' => 'required|min_length[3]|max_length[255]|is_unique[user.username]',
+            'first_name' => 'permit_empty|max_length[255]',
+            'last_name'  => 'permit_empty|max_length[255]',
+            'birthdate'  => 'required|valid_date',
+            'id_permission' => 'required|integer',
+        ];
+        return $data;
+    }
+
+    protected function setUpdateRules(array $data)
+    {
+        $id = $data['data']['id'] ?? null; // l’ID de l’utilisateur à mettre à jour
+        $this->validationRules = [
+            'email'    => "required|valid_email|max_length[255]|is_unique[user.email,id,$id]",
+            'password' => 'permit_empty|min_length[8]|max_length[255]',
+            'username' => "required|min_length[3]|max_length[255]|is_unique[user.username,id,$id]",
+            'first_name' => 'permit_empty|max_length[255]',
+            'last_name'  => 'permit_empty|max_length[255]',
+            'birthdate'  => 'required|valid_date',
+            'id_permission' => 'required|integer',
+        ];
+        return $data;
+    }
 
     protected $validationMessages = [
         'email' => [
@@ -67,8 +89,40 @@ class UserModel extends Model
         ],
     ];
 
-    public function findByEmail(string $email) : ?User
+    public function findByEmail(string $email): ?User
     {
         return $this->where('email', $email)->first();
+    }
+
+    /**
+     * Réactive un utilisateur soft deleted
+     */
+    public function reactive(int $id): bool
+    {
+        return $this->builder()
+            ->where('id', $id)
+            ->update(['deleted_at' => null, 'updated_at' => date('Y-m-d H:i:s')]);
+    }
+
+    protected function getDataTableConfig(): array
+    {
+        return [
+            'searchable_fields' => [
+                'first_name',
+                'last_name',
+                'username',
+                'email',
+                'user_permission.name'
+            ],
+            'joins' => [
+                [
+                    'table' => 'user_permission',
+                    'condition' => 'user.id_permission = user_permission.id',
+                    'type' => 'left'
+                ]
+            ],
+            'select' => 'user.*, user_permission.name as permission_name',
+            'with_deleted' => true
+        ];
     }
 }
