@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\DataTableTrait;
 
 class UserPermissionModel extends Model
 {
+    use DataTableTrait;
+
     protected $table            = 'user_permission';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
@@ -21,7 +24,7 @@ class UserPermissionModel extends Model
 
     protected $validationRules = [
         'name' => 'required|max_length[255]|is_unique[user_permission.name,id,{id}]',
-        'slug' => 'required|max_length[255]|is_unique[user_permission.name,id,{id}]',
+        'slug' => 'max_length[255]|is_unique[user_permission.name,id,{id}]',
     ];
 
     protected $validationMessages = [
@@ -31,7 +34,6 @@ class UserPermissionModel extends Model
             'is_unique'  => 'Cette permission existe déjà.',
         ],
         'slug' => [
-            'required'   => 'Le slug de la permission est obligatoire.',
             'max_length' => 'Le slug de la permission ne peut pas dépasser 255 caractères.',
             'is_unique'  => 'Ce slug existe déjà.',
         ],
@@ -49,5 +51,16 @@ class UserPermissionModel extends Model
         }
 
         return $data;
+    }
+    protected function getDataTableConfig(): array
+    {
+        return [
+            'searchable_fields' => [
+                'name',
+                'id',
+            ],
+            'joins' => [],
+            'select' => '*',
+        ];
     }
 }
