@@ -11,6 +11,19 @@
     "icon": "<i class=\"nav-icon fas fa-martini-glass-citrus\"></i>",
     "class": ""
   },
+  "ingredient": {
+    "title": "Ingrédients",
+    "url": "/admin/ingredient",
+    "icon": "<i class=\"nav-icon fas fa-solid fa-lemon\"></i>",
+    "class": "",
+    "subs": {
+      "brand": {
+        "title": "Marques",
+        "url": "/admin/brand",
+        "icon": "<i class=\"nav-icon fas fa-regular fa-registered\"></i>"
+      }
+    }
+  },
   "administration": {
     "title": "Administration",
     "url": "/",
