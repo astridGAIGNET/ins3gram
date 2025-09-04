@@ -21,6 +21,11 @@
         "title": "Marques",
         "url": "/admin/brand",
         "icon": "<i class=\"nav-icon fas fa-regular fa-registered\"></i>"
+      },
+      "categ_ing": {
+        "title": "Catégories d'ingrédients",
+        "url": "/admin/categ_ing",
+        "icon": ",<i class=\"nav-icon fas fa-solid fa-table-list\"></i>"
       }
     }
   },
