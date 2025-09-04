@@ -28,7 +28,9 @@ class Recipe extends Migration
 
             ],
             'alcool'=>[
-                'type'=>'BOOLEAN'
+                'type'=>'BOOLEAN',
+                'null'=>true,
+                'default'=>true,
             ],
             'id_user'=>[
                 'type'=>'INT',
