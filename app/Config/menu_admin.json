@@ -24,8 +24,8 @@
       },
       "categ_ing": {
         "title": "Catégories d'ingrédients",
-        "url": "/admin/categ_ing",
-        "icon": ",<i class=\"nav-icon fas fa-solid fa-table-list\"></i>"
+        "url": "/admin/categ-ing",
+        "icon": "<i class=\"nav-icon fas fa-solid fa-table-list\"></i>"
       }
     }
   },
