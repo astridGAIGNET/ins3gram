@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use App\Traits\DataTableTrait;
 
 class CategIngModel extends Model
 {
+    use DataTableTrait;
+
+
     protected $table            = 'categ_ing';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
@@ -25,11 +29,30 @@ class CategIngModel extends Model
             'max_length' => 'Le nom de la catégorie ne peut pas dépasser 255 caractères.',
             'is_unique'  => 'Cette catégorie existe déjà.',
         ],
-        'id_type_parent' => [
+        'id_categ_parent' => [
             'integer' => 'L’ID du parent doit être un nombre.',
         ],
     ];
 
 
     protected $beforeDelete   = [];
+    protected function getDataTableConfig(): array
+    {
+        return [
+            'searchable_fields' => [
+                'categ_ing.name',
+                'categ_ing.id',
+                'parent_name.name'
+            ],
+            'joins' => [
+                [
+                    'table' => 'categ_ing as parent_name',
+                    'condition' => 'categ_ing.id_categ_parent = parent_name.id',
+                    'type' => 'left'
+                ]
+            ],
+            'select' => 'categ_ing.*, parent_name.name as parent_name',
+            'with_deleted' => false
+        ];
+    }
 }

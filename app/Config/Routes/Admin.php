@@ -33,4 +33,11 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
         $routes->post('insert', 'Brand::insert');
         $routes->post('delete', 'Brand::delete');
     });
+
+    $routes->group('categ-ing', function ($routes) {
+        $routes->get('/', 'CategIng::index');
+        $routes->post('update', 'CategIing::update');
+        $routes->post('insert', 'CategIng::insert');
+        $routes->post('delete', 'CategIng::delete');
+    });
 });
