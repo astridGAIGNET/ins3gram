@@ -15,8 +15,8 @@ endif;
                     <input type="text" class="form-control" id="name" placeholder="Nom de la recette" name="name" value="<?= isset($recipe) ? $recipe['name'] : '' ?>" required>
                 </div>
                 <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" role="switch" id="switchCheck" name="active">
-                    <label class="form-check-label" for="switchCheck">Active</label>
+                    <input class="form-check-input" type="checkbox" role="switch" id="switchActive" name="active">
+                    <label class="form-check-label" for="switchActive">Active</label>
                 </div>
             </div>
         </div>
@@ -42,22 +42,22 @@ endif;
                         <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#step-tab-pane">Étapes</a>
                     </li>
                     <?php if(isset($recipe)) : ?>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#comment-tab-pane">Commentaires</a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#fav-tab-pane">Favoris</a>
-                    </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#comment-tab-pane">Commentaires</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#fav-tab-pane">Favoris</a>
+                        </li>
                     <?php endif; ?>
                 </ul>
-                <!--END: TABS--LINKS -->
+                <!--END: TABS-LINKS -->
                 <!--START: TABS-PANE -->
                 <div class="tab-content p-3 border border-1 border-top-0 rounded rounded-top-0" id="tabsRecipeContent">
                     <!--START: GENERAL -->
                     <div class="tab-pane fade show active" id="general-tab-pane" role="tabpanel">
                         <div class="mb-3">
                             <label class="form-label">Description globale de la recette</label>
-                            <textarea class="form-control" row="3" id="description" name="description"></textarea>
+                            <textarea class="form-control" rows="3" id="description" name="description"></textarea>
                         </div>
                         <div>
                             <div class="form-check form-switch">
@@ -66,38 +66,40 @@ endif;
                             </div>
                         </div>
                     </div>
-                    <!--END: GENERAL -->
-                    <!--START : INGREDIENT -->
+                    <!--END:GENERAL -->
+                    <!--START: INGREDIENTS -->
                     <div class="tab-pane fade" id="ingredient-tab-pane" role="tabpanel">
                         <div class="mb-3">
-                            <span class="btn btn-primary" id="add-ingredient">Ajouter un ingrédient</span>
+                            <span class="btn btn-primary" id="add-ingredient">
+                                Ajouter un ingrédient
+                            </span>
                         </div>
                         <div id="zone-ingredients">
 
                         </div>
                     </div>
-                    <!--END: INGREDIENT -->
-                    <!--START : MOTS CLES -->
+                    <!--END: INGREDIENTS -->
+                    <!--START: MOTS CLÉS -->
                     <div class="tab-pane fade" id="keyword-tab-pane" role="tabpanel">
                         MOTS CLES
                     </div>
-                    <!--END: MOTS CLES -->
-                    <!--START : ETAPES -->
+                    <!--END: MOTS CLÉS -->
+                    <!--START: ÉTAPES -->
                     <div class="tab-pane fade" id="step-tab-pane" role="tabpanel">
                         ETAPES
                     </div>
-                    <!--END: ETAPES -->
+                    <!--END: ÉTAPES -->
                     <?php if(isset($recipe)) : ?>
-                    <!--START : COMMENTAIRES -->
-                    <div class="tab-pane fade" id="comment-tab-pane" role="tabpanel">
-                        COMMENTAIRES
-                    </div>
-                    <!--END: COMMENTAIRES -->
-                    <!--START : FAVORIS -->
-                    <div class="tab-pane fade" id="fav-tab-pane" role="tabpanel">
-                        FAVORIS
-                    </div>
-                    <!--END: FAVORIS -->
+                        <!--START: COMMENTAIRES -->
+                        <div class="tab-pane fade" id="comment-tab-pane" role="tabpanel">
+                            COMMENTAIRES
+                        </div>
+                        <!--END: COMMENTAIRES -->
+                        <!--START: FAVORIS -->
+                        <div class="tab-pane fade" id="fav-tab-pane" role="tabpanel">
+                            FAVORIS
+                        </div>
+                        <!--END: FAVORIS -->
                     <?php endif; ?>
                 </div>
                 <!--END: TABS-PANE -->
@@ -112,33 +114,31 @@ endif;
                 <div class="d-grid mb-3">
                     <button type="submit" class="btn btn-primary">Valider</button>
                 </div>
-                <?php if (isset($recipe)) : ?>
-                <div class="ms-2">
-                    <div>
-                        <span class="fw-bold">Créée le:</div>
-                    <div>
-                        <span class="fw-bold">Modifiée le:</span></div>
-                </div>
+                <?php if (isset($recipe)) :  ?>
+                    <div class="ms-2">
+                        <div>
+                            <span class="fw-bold">Créée le: </span>
+                        </div>
+                        <div>
+                            <span class="fw-bold">Modifiée le: </span>
+                        </div>
+                    </div>
                 <?php endif; ?>
-                <div>
+                <div id="zone-user">
                     <label for="id_user" class="form-label">Créateur</label>
-                    <select class="form-select" id="id_user" name="id_user">
-                        <?php foreach($users as $u) : ?>
-                            <option value="<?= $u->id ?>">
-                                <?= $u->username ?>
-                            </option>
-                        <?php endforeach; ?>
+                    <select class="form-select select-user" name="users">
+
                     </select>
                 </div>
             </div>
         </div>
     </div>
-    <!-- END: COLONNE ACTIONS -->
+    <!--END: COLONNE ACTIONS -->
 </div>
 <?php echo form_close(); ?>
 <script>
     $(document).ready(function () {
-        //Activation de tinyMCE pour la description
+        //Activation de TinyMCE pour la description
         tinymce.init({
             selector: '#description',
             height : "200",
@@ -155,40 +155,58 @@ endif;
         });
         //Compteur pour nos ingrédients
         let cpt_ing = 0;
+        //url pour les requetes Ajax
+        baseUrl = "<?= base_url(); ?>";
         //Action du clique sur l'ajout d'un ingrédient
         $('#add-ingredient').on('click', function () {
-            cpt_ing++; //Augmente le compteur de 1
+            cpt_ing++; //augmente le compteur de 1
             let row = `
                 <div class="row mb-3 row-ingredient">
                     <div class="col-md-1 text-center">
                         <i class="fas fa-trash-alt text-danger supp-ingredient"></i>
                     </div>
                     <div class="col">
-                        <select class="form-select select-ingredient" name="id_ingredient[${cpt_ing}][id_ingredient]">
-                            <option value="">A</option>
-                            <option value="">B</option>
+                        <select class="form-select select-ingredient" name="ingredients[${cpt_ing}][id_ingredient]">
                         </select>
                     </div>
                     <div class="col">
                         <input class="form-control" type="number" min="0.1" step="0.1" name="ingredients[${cpt_ing}][quantity]">
                     </div>
                     <div class="col">
-                        <select class="form-select select-unit" name="id_unit[${cpt_ing}][id_unit]">
-                            <option value="">A</option>
-                            <option value="">B</option>
+                        <select class="form-select select-unit" name="ingredients[${cpt_ing}][id_unit]">
                         </select>
                     </div>
                 </div>
             `;
             $('#zone-ingredients').append(row);
-            $('.select-ingredient').select2();
-            $('.select-unit').select2)();
+            initAjaxSelect2('#zone-ingredients .row-ingredient:last-child .select-ingredient', {
+                url: baseUrl + '/admin/ingredient/search',
+                placeholder: 'Rechercher un ingrédient...',
+                searchFields: 'name,description',
+                showDescription: true,
+                delay: 250
+            });
+            initAjaxSelect2('#zone-ingredients .row-ingredient:last-child .select-unit', {
+                url: baseUrl + '/admin/unit/search',
+                placeholder: 'Rechercher une unité...',
+                searchFields: 'name',
+                delay: 250
+            });
+            $('#zone-user');
+            initAjaxSelect2('#zone-user .select-user', {
+                url: baseUrl + '/admin/user/search',
+                placeholder: 'Rechercher un utilisateur...',
+                searchFields: 'username',
+                delay: 250
+            });
         });
-        //Actions du bouton de suppression des ingrédients
+        //Action du bouton de suppression des ingrédients
         $('#zone-ingredients').on('click','.supp-ingredient',function() {
             $(this).closest('.row-ingredient').remove();
         });
+
         //Ajout de SELECT2 à notre select user
-        $('.#id_user').select2();
+        $('#id_user').select2();
+
     });
 </script>

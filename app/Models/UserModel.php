@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use App\Entities\User;
+use App\Traits\Select2Searchable;
 use CodeIgniter\Model;
 use App\Traits\DataTableTrait;
 class UserModel extends Model
 {
     use DataTableTrait;
+    use Select2Searchable;
 
     protected $table            = 'user';
     protected $primaryKey       = 'id';
@@ -88,6 +90,9 @@ class UserModel extends Model
             'integer'  => 'L’ID du rôle doit être un nombre.',
         ],
     ];
+
+    protected $select2SearchFields = ['username'];
+    protected $select2DisplayField = 'username';
 
     public function findByEmail(string $email): ?User
     {

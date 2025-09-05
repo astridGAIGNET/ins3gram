@@ -5,6 +5,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
 
     $routes->group('user', function ($routes) {
         $routes->get('/', 'User::index');
+        $routes->get('search', 'User::search');
         $routes->get('(:num)', 'User::edit/$1');
         $routes->get('new', 'User::create');
         $routes->post('update', 'User::update');
@@ -34,10 +35,18 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
         $routes->post('delete', 'Brand::delete');
     });
 
+    $routes->group('ingredient', function ($routes) {
+        $routes->get('search', 'Ingredient::search');
+    });
+
     $routes->group('categ-ing', function ($routes) {
         $routes->get('/', 'CategIng::index');
         $routes->post('update', 'CategIing::update');
         $routes->post('insert', 'CategIng::insert');
         $routes->post('delete', 'CategIng::delete');
+    });
+
+    $routes->group('unit', function ($routes) {
+        $routes->get('search', 'Unit::search');
     });
 });
