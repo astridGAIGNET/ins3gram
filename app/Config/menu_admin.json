@@ -11,6 +11,12 @@
     "icon": "<i class=\"nav-icon fas fa-martini-glass-citrus\"></i>",
     "class": ""
   },
+  "tag": {
+    "title": "Mots clés",
+    "url": "/admin/tag",
+    "icon": "<i class=\"nav-icon fas fa-solid fa-key\"></i>",
+    "class": ""
+  },
   "ingredient": {
     "title": "Ingrédients",
     "url": "/admin/ingredient",

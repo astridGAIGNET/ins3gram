@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\DataTableTrait;
 use CodeIgniter\Model;
 
 class TagModel extends Model
 {
+    use DataTableTrait;
+
     protected $table            = 'tag';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
@@ -30,4 +33,16 @@ class TagModel extends Model
     ];
 
     protected $beforeDelete   = [];
+
+    protected function getDataTableConfig(): array
+    {
+        return [
+            'searchable_fields' => [
+                'name',
+                'id',
+            ],
+            'joins' => [],
+            'select' => '*',
+        ];
+    }
 }

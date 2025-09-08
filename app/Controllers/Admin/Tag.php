@@ -5,56 +5,57 @@ namespace App\Controllers\Admin;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 
-class Brand extends BaseController
+class Tag extends BaseController
 {
     public function index()
     {
         helper('form');
-        return $this->view('admin/brand');
+        return $this->view('admin/tag');
     }
 
     public function insert() {
-        $bm = Model('BrandModel');
+        $tm = model('TagModel');
         $data = $this->request->getPost();
-        if ($bm->insert($data)) {
-            $this->success('Marque bien créée');
+        if ($tm->insert($data)) {
+            $this->success('Mot clé bien créé');
         } else {
-            foreach ($bm->errors() as $error) {
-                $this->error($error);
+            foreach ($tm->errors() as $key =>$error) {
+                $this->error($key . ' : ' . $error);
             }
         }
-        return $this->redirect('admin/brand');
+        return $this->redirect('admin/tag');
     }
 
     public function update() {
-        $bm = model('BrandModel');
+        $tm = Model('TagModel');
         $data = $this->request->getPost();
         $id = $data['id'];
         unset($data['id']);
-        if ($bm->update($id, $data)) {
+        if ($tm->update($id, $data)) {
             return $this->response->setJSON([
-                'success' => true,
-                'message' => 'La marque a été modifiée avec succès !',
+               'success' => true,
+               'message' => 'Mot clé modifié avec succès !'
             ]);
         } else {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => $bm->errors(),
+                'message' => $tm->errors(),
             ]);
         }
     }
+
     public function delete() {
-        $bm = model('BrandModel');
+        $tm = Model('TagModel');
         $id = $this->request->getPost('id');
-        if ($bm->delete($id)) {
+        if ($tm->delete($id)) {
             return $this->response->setJSON([
                 'success' => true,
-                'message' => "La marque a été supprimée avec succès !",
+                'message' => "le mot clé a été supprimé avec succès !"
             ]);
         } else {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => $bm->errors(),
+                'message' => $tm->errors(),
             ]);
         }
     }
