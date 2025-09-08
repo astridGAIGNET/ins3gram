@@ -29,4 +29,5 @@ class TagRecipeModel extends Model
             'integer'  => 'L’ID du tag doit être un nombre.',
         ],
     ];
+
 }
