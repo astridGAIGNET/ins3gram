@@ -91,8 +91,7 @@ class UserModel extends Model
         ],
     ];
 
-    protected $select2SearchFields = ['username'];
-    protected $select2DisplayField = 'username';
+
 
     public function findByEmail(string $email): ?User
     {
@@ -130,4 +129,6 @@ class UserModel extends Model
             'with_deleted' => true
         ];
     }
+    protected $select2SearchFields = ['username'];
+    protected $select2DisplayField = 'username';
 }
