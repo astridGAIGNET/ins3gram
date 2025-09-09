@@ -17,12 +17,17 @@
     "icon": "<i class=\"nav-icon fas fa-solid fa-key\"></i>",
     "class": ""
   },
-  "ingredient": {
+  "ingredients": {
     "title": "Ingrédients",
-    "url": "/admin/ingredient",
-    "icon": "<i class=\"nav-icon fas fa-solid fa-lemon\"></i>",
+    "url": "/",
+    "icon": "<i class=\"nav-icon fas fa-solid fa-flask\"></i>",
     "class": "",
     "subs": {
+      "ingredient": {
+        "title": "Ingrédients",
+        "url": "/admin/ingredient",
+        "icon": "<i class=\"nav-icon fas fa-solid fa-lemon\"></i>"
+      },
       "brand": {
         "title": "Marques",
         "url": "/admin/brand",
