@@ -124,6 +124,27 @@ class Recipe extends BaseController
                     $this->error($error);
                 }
             }
+            //Gestion des ingrédients
+            $qm = Model('QuantityModel');
+            if($qm->where('id_recipe', $id_recipe)->delete()){
+                if(isset($data['ingredients'])) {
+                    //ajout des ingrédients
+                    foreach($data['ingredients'] as $ingredient) {
+                        $ingredient['id_recipe'] = $id_recipe;
+                        if ($qm->insert($ingredient)) {
+                            //nothing
+                        } else {
+                            foreach($qm->errors() as $error){
+                                $this->error($error);
+                            }
+                        }
+                    }
+                }
+            } else {
+                foreach($qm->errors() as $error){
+                    $this->error($error);
+                }
+            }
         } else {
             foreach($rm->errors() as $error){
                 $this->error($error);
