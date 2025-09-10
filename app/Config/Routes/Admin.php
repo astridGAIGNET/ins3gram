@@ -29,6 +29,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     });
 
     $routes->group('brand', function ($routes) {
+        $routes->get('search', 'Brand::search');
         $routes->get('/', 'Brand::index');
         $routes->post('update', 'Brand::update');
         $routes->post('insert', 'Brand::insert');
@@ -37,6 +38,12 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
 
     $routes->group('ingredient', function ($routes) {
         $routes->get('search', 'Ingredient::search');
+        $routes->get('/', 'Ingredient::index');
+        $routes->get('(:num)', 'Ingredient::edit/$1');
+        $routes->get('new', 'Ingredient::create');
+        $routes->post('insert', 'Ingredient::insert');
+        $routes->post('update', 'Ingredient::update');
+        $routes->post('delete', 'Ingredient::delete');
     });
 
     $routes->group('categ-ing', function ($routes) {
