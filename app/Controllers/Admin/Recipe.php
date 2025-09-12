@@ -41,6 +41,10 @@ class Recipe extends BaseController
         foreach($recipe_tags as $recipe_tag) {
             $recipe['tags'][] = $recipe_tag['id_tag'];
         }
+        //Récupération des étapes créées
+        $steps = Model('StepModel')->where('id_recipe', $id_recipe)->orderBy('order','ASC')->findAll();
+        $recipe['steps'] = $steps;
+
         return $this->view('admin/recipe/form', ['tags' => $tags, 'recipe' => $recipe]);
     }
 
@@ -82,6 +86,21 @@ class Recipe extends BaseController
                         $this->success('Mots clés ajoutés avec succès à la recette !');
                     } else {
                         foreach ($trm->errors() as $error) {
+                            $this->error($error);
+                        }
+                    }
+                }
+            }
+
+            if(isset($data['step'])) {
+                $sm = Model('StepModel');
+                foreach($data['steps'] as $order => $step) {
+                    $step['id_recipe'] = $id_recipe;
+                    $step['order'] = $order;
+                    if ($qm->insert($step)) {
+                        $this->success('Étape ajoutée avec succès à la recette !');
+                    } else {
+                        foreach($qm->errors() as $error){
                             $this->error($error);
                         }
                     }
