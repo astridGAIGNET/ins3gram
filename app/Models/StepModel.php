@@ -12,7 +12,7 @@ class StepModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['description', 'ordre', 'id_recipe'];
+    protected $allowedFields    = ['description', 'order', 'id_recipe'];
 
     // Dates
     protected $useTimestamps = false;

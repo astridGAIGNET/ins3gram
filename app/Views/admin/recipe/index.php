@@ -60,10 +60,10 @@
                         const isActive = (row.status === 'active' || row.deleted_at === null);
                         const toggleButton = isActive
                             ? `<button class="btn btn-sm btn-danger" onclick="toggleRecipeStatus(${row.id}, 'deactivate')" title="Désactiver">
-                                 <i class="fas fa-user-times"></i>
+                                 <i class="fas fa-solid fa-trash-can"></i>
                                </button>`
                             : `<button class="btn btn-sm btn-success" onclick="toggleRecipeStatus(${row.id}, 'activate')" title="Activer">
-                                 <i class="fas fa-user-check"></i>
+                                 <i class="fas fa-solid fa-trash-can"></i>
                                </button>`;
 
                         return `
