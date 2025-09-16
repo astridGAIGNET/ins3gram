@@ -37,6 +37,11 @@
         "title": "Catégories d'ingrédients",
         "url": "/admin/categ-ing",
         "icon": "<i class=\"nav-icon fas fa-solid fa-table-list\"></i>"
+      },
+      "unit": {
+        "title": "Unités de mesure",
+        "url": "/admin/unit",
+        "icon": "<i class=\"nav-icon fas fa-solid fa-ruler-vertical\"></i>"
       }
     }
   },
