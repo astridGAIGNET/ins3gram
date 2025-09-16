@@ -39,8 +39,23 @@ class Brand extends BaseController
     public function insert() {
         $bm = Model('BrandModel');
         $data = $this->request->getPost();
-        if ($bm->insert($data)) {
+        $image= $this->request->getFile('image');
+        if ($id_brand = $bm->insert($data)) {
             $this->success('Marque bien créée');
+            if($image && $image->getError() !== UPLOAD_ERR_NO_FILE) {
+                $mediaData =[
+                    'entity_type' => 'brand',
+                    'entity_id' => $id_brand,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+                //Utiliser la fonction upload_file() de l'utils helper pour gérer l'upload et les données du média
+                $uploadResult = upload_file($image, 'brand', $image->getName(), $mediaData, false);
+                //Vérifier le résultat de l'upload
+                if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
+                    //Afficher un message d'erreur détaillé
+                    $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
+                }
+            }
         } else {
             foreach ($bm->errors() as $error) {
                 $this->error($error);
