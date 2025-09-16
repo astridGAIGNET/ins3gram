@@ -55,6 +55,11 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
 
     $routes->group('unit', function ($routes) {
         $routes->get('search', 'Unit::search');
+        $routes->get('/', 'Unit::index');
+        $routes->post('update', 'Unit::update');
+        $routes->post('insert', 'Unit::insert');
+        $routes->post('delete', 'Unit::delete');
+
     });
 
     $routes->group('tag', function ($routes) {
