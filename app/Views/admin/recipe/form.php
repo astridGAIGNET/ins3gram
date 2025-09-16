@@ -1,8 +1,8 @@
 <?php
 if(!isset($recipe)) :
-    echo form_open('/admin/recipe/insert');
+    echo form_open_multipart('/admin/recipe/insert');
 else:
-    echo form_open('/admin/recipe/update'); ?>
+    echo form_open_multipart('/admin/recipe/update'); ?>
     <input type="hidden" name="id_recipe" value="<?= $recipe['id']; ?>">
 <?php
 endif;
@@ -24,7 +24,7 @@ endif;
 </div>
 <div class="row">
     <!--START: COLONNE PRINCIPALE -->
-    <div class="col-md-10">
+    <div class="col-md-9">
         <div class="card h-100">
             <div class="card-body">
                 <!--START: TABS-LINKS -->
@@ -184,7 +184,7 @@ endif;
     </div>
     <!--END: COLONNE PRINCIPALE -->
     <!--START: COLONNE ACTIONS -->
-    <div class="col-md-2">
+    <div class="col-md-3">
         <div class="card h-100">
             <div class="card-body">
                 <div class="d-grid mb-3">
@@ -215,6 +215,9 @@ endif;
                     <select class="form-select" id="id_user" name="id_user">
                         <option value="<?= $id ?>" selected><?= $username ?></option>
                     </select>
+                </div>
+                <div class="mt-3">
+                    <input type="file" class="form-control" name="image">
                 </div>
             </div>
         </div>
