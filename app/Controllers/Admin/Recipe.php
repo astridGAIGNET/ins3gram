@@ -9,6 +9,8 @@ class Recipe extends BaseController
 {
     protected $breadcrumb = [['text' => 'Tableau de Bord', 'url' => '/admin/dashboard']];
 
+    protected $title = 'Recettes';
+
     public function index()
     {
         $this->addBreadcrumb('Recettes', "");
@@ -29,67 +31,55 @@ class Recipe extends BaseController
         helper('form');
         $this->addBreadcrumb('Recettes', "/admin/recipe");
         $this->addBreadcrumb('Modification d\'une recette', "");
+        //récuperer les informations de la recette (même celle désactivé)
         $recipe = Model('RecipeModel')->withDeleted()->find($id_recipe);
+        //Si je n'ai pas de recette je l'indique et redirige
         if (!$recipe) {
             $this->error('Recette introuvable');
             return $this->redirect('/admin/recipe');
         }
+        //Récupération de l'utilisateur qui à créé la recette (même s'il est désactivé)
         $user = Model('UserModel')->withDeleted()->find($recipe['id_user']);
         unset($recipe['id_user']);
-        $recipe['user'] = $user;
-        //récupération de quantity
-        $qm = Model('QuantityModel');
-        $ingredients = $qm->getQuantityByRecipe($id_recipe);
-        //recupération de la liste des tags
+        $recipe['user'] = $user; //on ajoute à notre tableau de recipe
+        //Récupération des ingrédients (via la table Quantity)
+        $ingredients = Model('QuantityModel')->getQuantityByRecipe($id_recipe);
+        $recipe['ingredients'] = $ingredients; //on ajoute au tableau recipe
+        //Récupération des mots clés (pour les afficher dans l'onglet)
         $tags = Model('TagModel')->findAll();
-        //recupération des ingrédients selectionnés
-        $recipe['ingredients'] = $ingredients;
-        //recupération des tags selectionnés
+        //Récupération des mots clés associés à notre recette
         $recipe_tags = Model('TagRecipeModel')->where('id_recipe', $id_recipe)->findAll();
+        //Création d'un tableau à une dimension pour utiliser in_array (directement dans notre tableau recipe)
         foreach ($recipe_tags as $recipe_tag) {
             $recipe['tags'][] = $recipe_tag['id_tag'];
         }
-        //Récupération des étapes créées
+        $mediamodel = Model('MediaModel');
+        //Récupération de l'image principale et stocker dans le tableau recipe
+        $recipe['mea'] = $mediamodel->where('entity_id', $id_recipe)->where('entity_type', 'recipe_mea')->first();
+        //Récupération des images de la recette et stocker dans le tableau recipe
+        $recipe['images'] = $mediamodel->where('entity_id', $id_recipe)->where('entity_type', 'recipe')->findAll();
+        //Récupération des étapes de la recette
         $steps = Model('StepModel')->where('id_recipe', $id_recipe)->orderBy('order', 'ASC')->findAll();
-        $recipe['steps'] = $steps;
-
+        $recipe['steps'] = $steps; //on ajoute à notre recette
+        //Affichage de la vue avec les mots clés et la recette complète en variable envoyés
         return $this->view('admin/recipe/form', ['tags' => $tags, 'recipe' => $recipe]);
     }
 
     public function insert()
     {
-
         $data = $this->request->getPost();
-        //echo "<pre>";
-        //print_r($data);
-        //die();
         $rm = Model('RecipeModel');
-        $image = $this->request->getFile('image');
-        //Ajout de ma recette + Récupération de l'ID de ma recette ajouté
-        if ($id_recipe = $rm->insert($data)) {
+
+        //Ajout de ma recette + récupération de l'ID de ma recette ajouté
+        if ($id_recipe = $rm->insert($data, true)) {
             $this->success('Recette créée avec succès !');
-            //Ajout du media
-            if ($image && $image->getError() !== UPLOAD_ERR_NO_FILE) {
-                $mediaData = [
-                    'entity_type' => 'recipe',
-                    'entity_id' => $id_recipe,
-                    'created_at' => date('Y-m-d H:i:s'),
-                ];
-                //Utiliser la fonction upload_file() de l'utils helper pour gérer l'upload et les données du média
-                $uploadResult = upload_file($image, 'recipe', $image->getName(), $mediaData, false);
-                //Vérifier le résultat de l'upload
-                if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
-                    //Afficher un message d'erreur détaillé
-                    $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
-                }
-            }
-            //Gestion activation /désactivation
+            //Gestion activation / désactivation
             if (!isset($data['active'])) {
                 $rm->delete($id_recipe);
             }
+
             if (isset($data['ingredients'])) {
                 $qm = Model('QuantityModel');
-
                 //Ajout des ingrédients
                 foreach ($data['ingredients'] as $ingredient) {
                     $ingredient['id_recipe'] = $id_recipe;
@@ -102,16 +92,16 @@ class Recipe extends BaseController
                     }
                 }
             }
-            //Ajout des mots clés
+
             if (isset($data['tags'])) {
-                //ajout des mots clés
+                //Ajout des mots clés (avec création d'un tableau)
                 $trm = Model('TagRecipeModel');
                 $tag_recipe = array();
                 $tag_recipe['id_recipe'] = $id_recipe;
                 foreach ($data['tags'] as $id_tag) {
                     $tag_recipe['id_tag'] = $id_tag;
                     if ($trm->insert($tag_recipe)) {
-                        $this->success('Mots clés ajoutés avec succès à la recette !');
+                        $this->success('Mot clés ajouté avec succès à la recette !');
                     } else {
                         foreach ($trm->errors() as $error) {
                             $this->error($error);
@@ -119,8 +109,8 @@ class Recipe extends BaseController
                     }
                 }
             }
-            //Ajout des étapes
-            if (isset($data['step'])) {
+
+            if (isset($data['steps'])) {
                 $sm = Model('StepModel');
                 foreach ($data['steps'] as $order => $step) {
                     $step['id_recipe'] = $id_recipe;
@@ -132,6 +122,23 @@ class Recipe extends BaseController
                             $this->error($error);
                         }
                     }
+                }
+            }
+
+            //images mea
+            $mea = $this->request->getFile('mea');
+            if($mea && $mea->getError() !== UPLOAD_ERR_NO_FILE){
+                $mediaData = [
+                    'entity_type' => 'recipe_mea',
+                    'entity_id' => $id_recipe,
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+                // Utiliser la fonction upload_file() de l'utils_helper pour gérer l'upload et les données du média
+                $uploadResult = upload_file($mea, 'recipe/mea', $mea->getName(), $mediaData,false);
+                // Vérifier le résultat de l'upload
+                if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
+                    // Afficher un message d'erreur détaillé
+                    $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
                 }
             }
         } else {
@@ -147,21 +154,8 @@ class Recipe extends BaseController
         $data = $this->request->getPost();
         $id_recipe = $data['id_recipe'];
         $rm = Model('RecipeModel');
-        $image = $this->request->getFile('image');
         if ($rm->update($id_recipe, $data)) {
             $this->success('Recette modifiée avec succès !');
-            // Ajouter la gestion de l'image
-            if ($image && $image->getError() !== UPLOAD_ERR_NO_FILE) {
-                $mediaData = [
-                    'entity_type' => 'recipe',
-                    'entity_id' => $id_recipe,
-                    'created_at' => date('Y-m-d H:i:s'),
-                ];
-                $uploadResult = upload_file($image, 'recipe', $image->getName(), $mediaData, false);
-                if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
-                    $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
-                }
-            }
             //Gestion activation / désactivation
             if (isset($data['active'])) {
                 $rm->reactive($id_recipe);
@@ -172,7 +166,7 @@ class Recipe extends BaseController
             $trm = Model('TagRecipeModel');
             if ($trm->where('id_recipe', $id_recipe)->delete()) {
                 if (isset($data['tags'])) {
-                    //ajout des mots clés (avec création d'un tableau)
+                    //Ajout des mots clés (avec création d'un tableau)
                     $tag_recipe = array();
                     $tag_recipe['id_recipe'] = $id_recipe;
                     foreach ($data['tags'] as $id_tag) {
@@ -182,56 +176,6 @@ class Recipe extends BaseController
                         } else {
                             foreach ($trm->errors() as $error) {
                                 $this->error($error);
-                            }
-                        }
-                    }
-                }
-
-                if (isset($data['steps'])) {
-                    $sm = Model('StepModel');
-                    $existing_steps = $sm->where('id_recipe', $id_recipe)->findAll();
-                    $check_existing_steps = array();
-                    foreach ($existing_steps as $step) {
-                        $check_existing_steps[] = $step['id'];
-                    }
-                    foreach ($data['steps'] as $order => $step) {
-                        //Pas d'ID alors c'est un ajout
-                        if (!isset($step['id'])) {
-                            //Insert
-                            @                       $step['id_recipe'] = $id_recipe;
-                            $step['order'] = $order;
-                            if ($sm->insert($step)) {
-                                $this->success('Étape ajoutée avec succès à la recette !');
-                            } else {
-                                foreach ($sm->errors() as $error) {
-                                    $this->error($error);
-                                }
-                            }
-                        } else {
-                            //Si j'ai un ID et qu'il est présent dans la BDD c'est une modification
-                            if (($key = array_search($step['id'], $check_existing_steps)) !== FALSE) {
-                                //Update + unset(id)
-                                $step['order'] = $order;
-                                if ($sm->update($step['id'], $step)) {
-                                    $this->success('Étape modifiée avec succès !');
-                                } else {
-                                    foreach ($sm->errors() as $error) {
-                                        $this->error($error);
-                                    }
-                                }
-                                unset($check_existing_steps[$key]);
-                            }
-                        }
-                    }
-                    foreach ($check_existing_steps as $id) {
-                        //Delete
-                        foreach ($check_existing_steps as $id_step) {
-                            if ($sm->delete($id_step)) {
-                                $this->success('Étape supprimée avec succès !');
-                            } else {
-                                foreach ($sm->errors() as $error) {
-                                    $this->error($error);
-                                }
                             }
                         }
                     }
@@ -246,11 +190,12 @@ class Recipe extends BaseController
             $qm = Model('QuantityModel');
             if ($qm->where('id_recipe', $id_recipe)->delete()) {
                 if (isset($data['ingredients'])) {
-                    //ajout des ingrédients
+                    $qm = Model('QuantityModel');
+                    //Ajout des ingrédients
                     foreach ($data['ingredients'] as $ingredient) {
                         $ingredient['id_recipe'] = $id_recipe;
                         if ($qm->insert($ingredient)) {
-                            //nothing
+                            //$this->success('Ingrédient ajouté avec succès !');
                         } else {
                             foreach ($qm->errors() as $error) {
                                 $this->error($error);
@@ -259,8 +204,101 @@ class Recipe extends BaseController
                     }
                 }
             } else {
-                foreach ($qm->errors() as $error) {
+                foreach ($rm->errors() as $error) {
                     $this->error($error);
+                }
+            }
+
+            if (isset($data['steps'])) {
+                $sm = Model('StepModel');
+                $existing_steps = $sm->where('id_recipe', $id_recipe)->findAll();
+                $check_existing_steps = array();
+                foreach ($existing_steps as $step) {
+                    $check_existing_steps[] = $step['id'];
+                }
+                foreach ($data['steps'] as $order => $step) {
+                    //Pas d'ID alors c'est un ajout
+                    if (!isset($step['id'])) {
+                        //insert
+                        $step['id_recipe'] = $id_recipe;
+                        $step['order'] = $order;
+                        if ($sm->insert($step)) {
+                            //$this->success('Étape ajoutée avec succès à la recette !');
+                        } else {
+                            foreach ($sm->errors() as $error) {
+                                $this->error($error);
+                            }
+                        }
+                    } else {
+                        //Si j'ai un ID et qu'il est présent dans ma BDD c'est une modification
+                        if (($key = array_search($step['id'], $check_existing_steps)) !== FALSE) {
+                            //update + unset(id)
+                            $step['order'] = $order;
+                            if ($sm->update($step['id'], $step)) {
+                                //$this->success('Étape modifiée avec succès !');
+                            } else {
+                                foreach ($sm->errors() as $error) {
+                                    $this->error($error);
+                                }
+                            }
+                            unset($check_existing_steps[$key]);
+                        }
+                    }
+                }
+                foreach ($check_existing_steps as $id) {
+                    //delete
+                    foreach ($check_existing_steps as $id_step) {
+                        if ($sm->delete($id_step)) {
+                            $this->success('Étape supprimée avec succès !');
+                        } else {
+                            foreach ($sm->errors() as $error) {
+                                $this->error($error);
+                            }
+                        }
+                    }
+                }
+            }
+
+            //images mea
+            $mea = $this->request->getFile('mea');
+            if($mea && $mea->getError() !== UPLOAD_ERR_NO_FILE){
+                $mediaData = [
+                    'entity_type' => 'recipe_mea',
+                    'entity_id' => $id_recipe,
+                    'created_at' => date('Y-m-d H:i:s')
+                ];
+                // Utiliser la fonction upload_file() de l'utils_helper pour gérer l'upload et les données du média
+                $uploadResult = upload_file($mea, 'recipe/'.$id_recipe, $mea->getName(), $mediaData,false);
+                // Vérifier le résultat de l'upload
+                if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
+                    // Afficher un message d'erreur détaillé
+                    $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
+                }
+            }
+            //gestion des images de la recette
+            $images = $this->request->getFiles()['images'];
+            foreach ($images as $image) {
+                if($image && $image->getError() !== UPLOAD_ERR_NO_FILE){
+                    $mediaData = [
+                        'entity_type' => 'recipe',
+                        'entity_id' => $id_recipe,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+                    // Utiliser la fonction upload_file() de l'utils_helper pour gérer l'upload et les données du média
+                    $uploadResult = upload_file($image, 'recipe/'.$id_recipe, $image->getName(), $mediaData,true);
+                    // Vérifier le résultat de l'upload
+                    if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
+                        // Afficher un message d'erreur détaillé
+                        $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
+                    }
+                }
+            }
+            //suppression des images
+            if(isset($data['delete-img'])) {
+                $mediaModel = Model('MediaModel');
+                    foreach ($data['delete-img'] as $id_img) {
+                        // $mediaModel->delete($id_img); //suppression uniquement de la BDD
+                        $mediaModel->deleteMedia($id_img); //suppression BDD + physique
                 }
             }
         } else {
@@ -268,6 +306,7 @@ class Recipe extends BaseController
                 $this->error($error);
             }
         }
+
         return $this->redirect('/admin/recipe');
     }
 
@@ -276,30 +315,26 @@ class Recipe extends BaseController
         $id = $this->request->getPost('id_recipe');
         $recipeModel = model('RecipeModel');
 
-        //récupération de la recette (même si elle est soft delete)
+        // Récupérer l'utilisateur (même s'il est soft deleted)
         $recipe = $recipeModel->withDeleted()->find($id);
+
         if (!$recipe) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Recette introuvable'
+                'message' => 'Utilisateur introuvable'
             ]);
         }
-        if ($recipe['deleted_at'] === null) {
-            if ($recipeModel->delete($id)) {
-                //Désactiver la recette (soft delete)
-                return $this->response->setJSON([
-                    'success' => true,
-                    'message' => 'Recette désactivée',
-                    'status' => 'inactive'
-                ]);
-            } else {
-                return $this->response->setJSON([
-                    'success' => false,
-                    'message' => 'Erreur lors de la désactivation'
-                ]);
-            }
+
+        if (empty($recipe['deleted_at'])) {
+            // Désactiver l'utilisateur (soft delete)
+            $recipeModel->delete($id);
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Recette désactivée',
+                'status' => 'inactive'
+            ]);
         } else {
-            //Réactiver avec la méthode restore
+            // Réactiver avec la méthode restore
             if ($recipeModel->reactive($id)) {
                 return $this->response->setJSON([
                     'success' => true,

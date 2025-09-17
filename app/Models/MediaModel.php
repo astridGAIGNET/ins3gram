@@ -56,4 +56,22 @@ class MediaModel extends Model
     // Callbacks
 
     protected $beforeDelete   = [];
+
+    public function deleteMedia($id) {
+        // Récupérer les informations du fichier depuis la base de données
+        $fichier = $this->find($id);
+        if ($fichier) {
+            // Chemin complet du fichier tel qu'il est stocké dans la base de données
+            $chemin = FCPATH . $fichier['file_path'];
+
+            // Vérifier si le fichier existe et le supprimer
+            if (file_exists($chemin)) {
+                // Supprimer le fichier physique
+                unlink($chemin);
+                // Supprimer l'entrée de la base de données
+                return $this->delete($id);
+            }
+        }
+        return false; // Le fichier n'a pas été trouvé
+    }
 }

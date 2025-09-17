@@ -24,13 +24,16 @@ endif;
 </div>
 <div class="row">
     <!--START: COLONNE PRINCIPALE -->
-    <div class="col-md-9">
+    <div class="col-md-10">
         <div class="card h-100">
             <div class="card-body">
                 <!--START: TABS-LINKS -->
                 <ul class="nav nav-tabs" id="tabsRecipe">
                     <li class="nav-item">
                         <a href="#" class="nav-link active" data-bs-toggle="tab" data-bs-target="#general-tab-pane">Général</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#image-tab-pane">Images <span id="badge-image" class="badge rounded-pill text-bg-primary"><?= (isset($recipe['images'])) ? count($recipe['images']) : '0' ;?></span></a>
                     </li>
                     <li class="nav-item">
                         <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#ingredient-tab-pane">Ingrédients <span id="badge-ingredient" class="badge rounded-pill text-bg-primary"><?= (isset($recipe['ingredients'])) ? count($recipe['ingredients']) : '0' ;?></span></a>
@@ -70,6 +73,27 @@ endif;
                         </div>
                     </div>
                     <!--END:GENERAL -->
+                    <!--START IMAGES -->
+                    <div class="tab-pane fade" id="image-tab-pane" role="tabpanel">
+                        <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3">
+                            <?php foreach($recipe['images'] as $image) : ?>
+                                <div class="col">
+                                    <div class="position-relative img-hover-delete">
+                                        <div class="position-absolute img-thumbnail" style="width: 100%;height: 100%;background-color:rgb(0,0,0,0.4); display:none;">
+                                            <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+                                                <a href="" class="btn btn-danger text-light delete-img" data-id="<?= $image['id'] ?>"><i class="fas fa-trash-alt"></i> Supprimer</a>
+                                            </div>
+                                        </div>
+                                        <img class="img-thumbnail" src="<?= base_url($image['file_path']); ?>">
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="mt-3">
+                            <input type="file" name="images[]" class="form-control" multiple>
+                        </div>
+                    </div>
+                    <!--END: IMAGES -->
                     <!--START: INGREDIENTS -->
                     <div class="tab-pane fade" id="ingredient-tab-pane" role="tabpanel">
                         <div class="mb-3">
@@ -184,7 +208,7 @@ endif;
     </div>
     <!--END: COLONNE PRINCIPALE -->
     <!--START: COLONNE ACTIONS -->
-    <div class="col-md-3">
+    <div class="col-md-2">
         <div class="card h-100">
             <div class="card-body">
                 <div class="d-grid mb-3">
@@ -217,7 +241,13 @@ endif;
                     </select>
                 </div>
                 <div class="mt-3">
-                    <input type="file" class="form-control" name="image">
+                    <label for="mea" class="form-label">Image Principale</label>
+                    <?php if (isset($recipe['mea']) && !empty($recipe['mea'])) : ?>
+                        <div class="text-center mb-3 ">
+                            <img class="img-thumbnail" src="<?= base_url($recipe['mea']['file_path']); ?>" >
+                        </div>
+                    <?php endif; ?>
+                    <input id="mea" type="file" name="mea" class="form-control">
                 </div>
             </div>
         </div>
@@ -332,6 +362,21 @@ endif;
                 badge.html(parseInt(badge.html()) - 1);
             }
         });
+        //Actions sur le survol d'une image
+        $('.img-hover-delete').on('mouseenter mouseleave', function() {
+            $(this).find('.position-absolute').fadeToggle('fast');
+        });
+        //Action sur le bouton de suppression d'une image
+        $('.delete-img').on('click', function(e) {
+            e.preventDefault();
+            let id= $(this).data('id');
+            let $col = $(this).closest('.col');
+            $col.hide();
+            $col.append(`<input type="hidden" name="delete-img[]" value="${id}">`);
+            $(this).closest('.col').hide();
+            $('#badge-image').html(parseInt($('#badge-image').html())-1);
+        });
+
         //Ajout de SELECT2 à notre select user
         initAjaxSelect2('#id_user', {
             url: baseUrl + 'admin/user/search',
