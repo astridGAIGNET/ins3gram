@@ -141,6 +141,25 @@ class Recipe extends BaseController
                     $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
                 }
             }
+
+            //Gestion des images de la recette
+            $images = $this->request->getFiles()['images'];
+            foreach ($images as $image) {
+                if($image && $image->getError() !== UPLOAD_ERR_NO_FILE){
+                    $mediaData = [
+                        'entity_type' => 'recipe',
+                        'entity_id' => $id_recipe,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+                    // Utiliser la fonction upload_file() de l'utils_helper pour gérer l'upload et les données du média
+                    $uploadResult = upload_file($image, 'recipe/'.$id_recipe, $image->getName(), $mediaData,true);
+                    // Vérifier le résultat de l'upload
+                    if (is_array($uploadResult) && $uploadResult['status'] === 'error') {
+                        // Afficher un message d'erreur détaillé
+                        $this->error("Une erreur est survenue lors de l'upload de l'image : " . $uploadResult['message']);
+                    }
+                }
+            }
         } else {
             foreach ($rm->errors() as $error) {
                 $this->error($error);
