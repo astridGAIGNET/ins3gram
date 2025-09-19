@@ -32,6 +32,12 @@ class Recipe extends Migration
                 'null'=>true,
                 'default'=>true,
             ],
+            'slug'=>[
+                'type'=>'VARCHAR',
+                'constraint'=>'255',
+                'unique'=>true,
+                'null'=>false
+            ],
             'id_user'=>[
                 'type'=>'INT',
                 'constraint'=>11,
