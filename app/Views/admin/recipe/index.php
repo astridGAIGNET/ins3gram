@@ -71,7 +71,9 @@
                                 <a href="<?= base_url('/admin/recipe/') ?>${row.id}" class="btn btn-sm btn-warning" title="Modifier">
                                     <i class="fas fa-edit"></i>
                                 </a>
-                                ${toggleButton}
+                                <a href="<?= base_url('/recette/') ?>${row.slug}" class="btn btn-sm btn-primary" target="_blank" title="Voir la recette">
+                                    <i class="fas fa-eye"></i>
+                                </a>
                             </div>
                         `;
                     }

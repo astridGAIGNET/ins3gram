@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class SubstituteModel extends Model
 {
     protected $table            = 'substitute';
-    protected $primaryKey       = null;
+    protected $primaryKey       = ['id_ingredient_base'];
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
@@ -16,7 +16,7 @@ class SubstituteModel extends Model
 
     protected $validationRules = [
         'id_ingredient_base' => 'required|integer',
-        'id_ingredient_sub'  => 'required|integer|different[id_ingredient_base]',
+        'id_ingredient_sub'  => 'required|integer|differs[id_ingredient_base]',
     ];
 
     protected $validationMessages = [
@@ -31,4 +31,28 @@ class SubstituteModel extends Model
         ],
     ];
 
+    protected function getDataTableConfig(): array {
+        return [
+            'searchable_fields' => [
+                'substitute.id_ingredient_base',
+                'substitute.id_ingredient_sub',
+                'ingredient_base.name',
+                'ingredient_sub.name',
+            ],
+            'joins' => [
+                [
+                    'table' => 'ingredient as ingredient_base',
+                    'condition' => 'substitute.id_ingredient_base = ingredient_base.id',
+                    'type' => 'left',
+                ],
+                [
+                    'table' => 'ingredient as ingredient_sub',
+                    'condition' => 'substitute.id_ingredient_sub = ingredient_sub.id',
+                    'type' => 'left',
+                ]
+            ],
+            'select' => 'substitute.*, ingredient_base.name as ingredient_base_name, ingredient_sub.name as ingredient_sub_name',
+            'with_deleted' => false
+        ];
+    }
 }

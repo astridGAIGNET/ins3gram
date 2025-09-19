@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Select2Searchable;
 use CodeIgniter\Model;
 use App\Traits\DataTableTrait;
 
 class CategIngModel extends Model
 {
     use DataTableTrait;
-
+    use Select2Searchable;
 
     protected $table            = 'categ_ing';
     protected $primaryKey       = 'id';

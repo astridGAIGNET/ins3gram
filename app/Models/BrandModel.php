@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\Select2Searchable;
 use CodeIgniter\Model;
 use App\Traits\DataTableTrait;
 
@@ -9,6 +10,8 @@ use App\Traits\DataTableTrait;
 class BrandModel extends Model
 {
     use DataTableTrait;
+    use Select2Searchable;
+
 
     protected $table = 'brand';
     protected $primaryKey = 'id';

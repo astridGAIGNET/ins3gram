@@ -48,6 +48,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     });
 
     $routes->group('categ-ing', function ($routes) {
+        $routes->get('search', 'CategIng::search');
         $routes->get('/', 'CategIng::index');
         $routes->post('update', 'CategIing::update');
         $routes->post('insert', 'CategIng::insert');
@@ -68,5 +69,12 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
         $routes->post('update', 'Tag::update');
         $routes->post('insert', 'Tag::insert');
         $routes->post('delete', 'Tag::delete');
+    });
+
+    $routes->group('substitute', function ($routes) {
+        $routes->get('search', 'Substitute::search');
+        $routes->post('update', 'Substitute::update');
+        $routes->post('insert', 'Substitute::insert');
+        $routes->post('delete', 'Substitute::delete');
     });
 });
