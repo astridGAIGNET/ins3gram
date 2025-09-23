@@ -72,6 +72,7 @@ class RecipeModel extends Model
         } else {
             return [];
         }
+        if(!$recipe) return [];
         $id_recipe = $recipe['id'];
         //Récupération de l'utilisateur qui à créé la recette (même s'il est désactivé)
         $user = Model('UserModel')->withDeleted()->find($recipe['id_user']);
@@ -104,6 +105,14 @@ class RecipeModel extends Model
         return $recipe;
     }
 
+    public function getAllRecipes($limit = 8, $offset = 0) {
+        $this->select('recipe.id, recipe.name, alcool, slug, media.file_path as mea, COALESCE(AVG(score), 0) as score');
+        $this->join('media', 'recipe.id = media.entity_id AND media.entity_type = \'recipe_mea\'', 'left');
+        $this->join('opinion', 'recipe.id = opinion.id_recipe', 'left');
+        $this->groupBy('recipe.id');
+        return $this->findAll($limit, $offset);
+
+    }
     public function reactive(int $id): bool
     {
         return $this->builder()
