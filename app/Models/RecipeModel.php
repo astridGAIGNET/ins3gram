@@ -138,4 +138,5 @@ class RecipeModel extends Model
             'with_deleted' => true
         ];
     }
+
 }
