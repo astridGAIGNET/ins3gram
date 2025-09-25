@@ -65,7 +65,7 @@ class IngredientModel extends Model
 
     protected $select2SearchFields = ['name', 'description'];
     protected $select2DisplayField = 'name';
-    protected $select2AdditionalFields = ['description'];
+    protected $select2AdditionalFields = ['description','id_brand','id_categ'];
 
     protected function getDataTableConfig(): array
     {
