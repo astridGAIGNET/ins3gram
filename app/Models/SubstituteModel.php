@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class SubstituteModel extends Model
 {
     protected $table            = 'substitute';
-    protected $primaryKey       = ['id_ingredient_base'];
+    protected $primaryKey       = 'id_ingredient_base';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
