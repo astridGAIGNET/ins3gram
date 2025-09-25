@@ -10,12 +10,13 @@
             <select class="form-select">
                 <option>Nom (ASC)</option>
             </select>
-            <?php echo form_open('recette', ['method' => 'get']); ?>
+            <?php echo form_open('recette',['method'=>'get']);?>
             <div class="btn-group">
-                <span type="submit" name="per_page" value="8" "btn btn-primary">8</span>
-                <span type="submit" name="per_page" value="16" "btn btn-secondary">16</span>
-                <span type="submit" name="per_page" value="24" "btn btn-secondary">24</span>
+                <button type="submit" name="per_page" value="8" class="btn btn-primary">8</button>
+                <button type="submit" name="per_page" value="16" class="btn btn-secondary">16</button>
+                <button type="submit" name="per_page" value="24" class="btn btn-secondary">24</button>
             </div>
+            <?php echo form_close();?>
         </div>
     </div>
 </div>
