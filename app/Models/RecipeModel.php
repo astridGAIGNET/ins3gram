@@ -105,14 +105,31 @@ class RecipeModel extends Model
         return $recipe;
     }
 
-    public function getAllRecipes($limit = 8, $offset = 0) {
+    public function getAllRecipes($filters = [], $orderBy = 'name', $orderDirection = 'ASC', $perPage = 8, $page = 1) {
+        // Requête de base identique à votre ancienne version
         $this->select('recipe.id, recipe.name, alcool, slug, media.file_path as mea, COALESCE(AVG(score), 0) as score');
-        $this->join('media', 'recipe.id = media.entity_id AND media.entity_type = \'recipe_mea\'', 'left');
-        $this->join('opinion', 'recipe.id = opinion.id_recipe', 'left');
+        $this->join('media',' recipe.id = media.entity_id AND media.entity_type = \'recipe_mea\'','left');
+        $this->join('opinion',' opinion.id_recipe = recipe.id','left');
+        $this->applyFilters($filters);
         $this->groupBy('recipe.id');
-        return $this->findAll($limit, $offset);
+        $this->orderBy($this->getValidOrderField($orderBy), $orderDirection);
+        $data = $this->paginate($perPage, 'default', $page);
+        return [
+            'data' => $data,
+            'pager' => $this->pager
+        ];
 
     }
+    public function countAllRecipes($filters = []) {
+        // Même construction que getAllRecipes mais pour compter
+        $this->select('recipe.id');
+        $this->join('media',' recipe.id = media.entity_id AND media.entity_type = \'recipe_mea\'','left');
+        $this->join('opinion',' opinion.id_recipe = recipe.id','left');
+        $this->applyFilters($filters);
+        $this->groupBy('recipe.id');
+        return $this->countAllResults();
+    }
+
     public function reactive(int $id): bool
     {
         return $this->builder()
@@ -139,4 +156,36 @@ class RecipeModel extends Model
         ];
     }
 
+    protected function is_filter_active() {
+        if (!empty($search)) {
+            $this->like('name', $search);
+        // ou $this->where("name LIKE '%$search%'");
+        }
+        $sort = $filters['sort'] ?? 'name_asc';
+        switch ($sort) {
+            case 'name_asc': $this->orderBy('name', 'ASC'); break;
+            case 'name_desc': $this->orderBy('name', 'DESC'); break;
+            case 'score_desc': $this->orderBy('score', 'DESC'); break;
+        }
+    }
+
+    private function applyFilters($filters = []) {
+
+            if (isset($filters['alcool']) && $filters['alcool'] == 1) {
+                $this->where('recipe.alcool', 1);
+            }
+            if (!empty($filters['search'])) {
+                $this->like('name', $filters['search']);
+            }
+            return $this;
+    }
+
+    private function getValidOrderField($field) {
+        $allowedFields = [
+            'name' => 'recipe.name',
+            'created_at' => 'recipe.created_at',
+            'score' => 'score'
+        ];
+        return $allowedFields[$field] ?? 'recipe.name';
+    }
 }
