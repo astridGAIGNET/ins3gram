@@ -13,15 +13,35 @@
     </div>
 </div>
 <div class="container-lg">
-    <div class="row bg-secondary-subtle py-4">
+    <div class="row bg-secondary-subtle py-3">
         <!-- START: OPINION -->
-        <div class="col-md-2">
+        <div class="col-md-3 text-center">
             <!-- SYSTEME DE NOTATION ETOILES-->
-            <div class="rating half-star-ratings raty p-3" data-half="true" data-score="" data-number="5"></div>
+            <h5>Notez cette recette :</h5>
+
+            <!-- SYSTEME DE NOTATION ETOILES-->
+            <div class="star-rating justify-content-center">
+                <input type="radio" name="star-rating" id="star1" value="1" />
+                <label for="star1">&#9734</label>
+
+                <input type="radio" name="star-rating" id="star2" value="2" />
+                <label for="star2">&#9734</label>
+
+                <input type="radio" name="star-rating" id="star3" value="3" />
+                <label for="star3">&#9734</label>
+
+                <input type="radio" name="star-rating" id="star4" value="4" />
+                <label for="star4">&#9734</label>
+
+                <input type="radio" name="star-rating" id="star5" value="5" />
+                <label for="star5">&#9734</label>
+            </div>
+
+            <p class="mt-3">Note sélectionnée : <span id="rating-value">0</span> / 5</p>
         </div>
         <!-- END: OPINION -->
-        <div class="col-md-8 text-center align-self-end">
-            <div class="row justify-content-md-center">
+        <div class="col-md-6 text-center align-self-center">
+            <div class="row justify-content-center g-4">
                 <!-- START: PDF-->
                 <div class="col col-lg-2">
                     <span class="">
@@ -30,9 +50,10 @@
                 </div>
                 <!-- END: PDF-->
                 <!-- START: FAVORITE-->
-                <div class="col-md-auto">
-                        <span class="">
-                        <i class="fa-regular fa-heart fa-2x"></i>
+                <div class="col-md-auto favorite">
+                    <span>
+                        <input type="checkbox" name="favorite" id="favorite" value="favorite">
+                        <label for="favorite" id="heart-label">♡</label>
                     </span>
                 </div>
                 <!-- END: FAVORITE-->
@@ -44,6 +65,8 @@
                 </div>
                 <!-- END: SHARE-->
             </div>
+        </div>
+        <div class="col-md-3">
         </div>
     </div>
 </div>
@@ -151,27 +174,6 @@
 <!-- END: ETAPES -->
 <script>
     $(document).ready(function () {
-
-        // Initialiser les étoiles pour notation
-        $(document).ready(function () {
-            $('.rating').raty({
-                starType: 'i',
-                starOff: 'far fa-star',
-                starOn: 'fas fa-star',
-                starHalf: 'fas fa-star-half-alt',
-                half: true,
-                score: function () {
-                    return $(this).attr('data-score');
-                },
-                number: 5,
-                readOnly: false,
-                cancel: false,  // Pas de bouton d'annulation
-                click: function (score, evt) {
-                    console.log('Note sélectionnée : ' + score);
-                }
-            });
-        });
-
         var main = new Splide('#main-slider', {
             type: 'fade',
             heightRation: 0.5,
@@ -199,4 +201,91 @@
         main.mount();
         thumbnails.mount();
     })
+    //LES ETOILES
+    const ratingInputs = document.querySelectorAll('input[name="star-rating"]');
+    const ratingLabels = document.querySelectorAll('.star-rating label');
+    const ratingValue = document.getElementById('rating-value');
+    let currentRating = 0;
+
+    // Fonction pour mettre à jour l'affichage des étoiles
+    function updateStars(rating) {
+        ratingLabels.forEach((label, index) => {
+            if (index < rating) {
+                label.textContent = '★'; // Étoile pleine
+            } else {
+                label.textContent = '☆'; // Étoile vide
+            }
+        });
+    }
+
+    // Au clic : enregistrer la note
+    ratingInputs.forEach((input, index) => {
+        input.addEventListener('change', function() {
+            currentRating = parseInt(this.value);
+            ratingValue.textContent = currentRating;
+            updateStars(currentRating);
+        });
+    });
+
+    // Au survol : prévisualiser
+    ratingLabels.forEach((label, index) => {
+        label.addEventListener('mouseenter', function() {
+            updateStars(index + 1);
+        });
+    });
+
+    // Quand on quitte la zone : revenir à la note enregistrée
+    document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+        updateStars(currentRating);
+    });
+
+    //OPINION (LIKE)
+    const opinionInput = document.getElementById('opinion');
+    const heartLabel = document.getElementById('heart-label');
+
+    opinionInput.addEventListener('change', function() {
+        if (this.checked) {
+            heartLabel.textContent = '♥'; // Cœur plein
+        } else {
+            heartLabel.textContent = '♡'; // Cœur vide
+        }
+    });
 </script>
+<style>
+    .star-rating {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .star-rating input {
+        display: none;
+    }
+
+    .star-rating label {
+        font-size: 25px;
+        color: #000;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .favorite {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        gap: 5px;
+    }
+
+    .favorite input {
+        display: none;
+    }
+
+    .favorite label {
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 40px;
+        color: #000;
+        line-height: 1;
+    }
+</style>
