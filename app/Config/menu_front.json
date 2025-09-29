@@ -1,7 +1,7 @@
 {
   "recipe": {
     "title": "Recettes",
-    "url": "/front/recette/index",
+    "url": "/recette",
     "icon": "<i class=\"nav-icon fa-solid fa-martini-glass-citrus\"></i>",
     "class": ""
   },
