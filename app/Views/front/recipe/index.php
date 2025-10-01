@@ -5,21 +5,31 @@
 </div>
 <div class="row">
     <div class="col">
-        <div class="d-flex align-items-end">
-            <span>Trier par </span>
-            <select name="sort" class="form-select" onchange="window.location.href=this.value">
-                <option value="<?= build_filter_url(['name' => 'name_asc']) ?>" <?= is_filter_active('sort', 'name_asc') ? 'selected' : '' ?>>Nom (A-Z)</option>
-                <option value="<?= build_filter_url(['name' => 'name_desc']) ?>" <?= is_filter_active('sort', 'name_desc') ? 'selected' : '' ?>>Nom (Z-A)</option>
-                <option value="<?= build_filter_url(['sort' => 'score_desc']) ?>" <?= is_filter_active('sort', 'score_desc') ? 'selected' : '' ?>>Meilleure note</option>
-            </select>
+        <div class="d-flex align-items-center justify-content-end">
+            <div class="ms-2">Trier par</div>
+            <div class="ms-2">
+                <select name="sort" class="form-select" onchange="window.location.href=this.value">
+                    <option value="<?= build_filter_url(['sort' => 'name_asc']) ?>" <?= is_filter_active('sort', 'name_asc') ? 'selected' : '' ?>>
+                        Nom (A-Z)
+                    </option>
+                    <option value="<?= build_filter_url(['sort' => 'name_desc']) ?>" <?= is_filter_active('sort', 'name_desc') ? 'selected' : '' ?>>
+                        Nom (Z-A)
+                    </option>
+                    <option value="<?= build_filter_url(['sort' => 'score_desc']) ?>" <?= is_filter_active('sort', 'score_desc') ? 'selected' : '' ?>>
+                        Meilleure note
+                    </option>
+                </select>
+            </div>
 
-            <div name="per_page" onchange="window.location.href=this.value" class="btn-group">
-                <a href="<?= build_filter_url(['per_page' => 8]) ?>"
-                   class="btn <?= is_filter_active('per_page', 8) ? 'btn-primary' : 'btn-secondary' ?>">8</a>
-                <a href="<?= build_filter_url(['per_page' => 16]) ?>"
-                   class="btn <?= is_filter_active('per_page', 16) ? 'btn-primary' : 'btn-secondary' ?>">16</a>
-                <a href="<?= build_filter_url(['per_page' => 24]) ?>"
-                   class="btn <?= is_filter_active('per_page', 24) ? 'btn-primary' : 'btn-secondary' ?>">24</a>
+            <div class="ms-2 btn-group">
+                <div class="btn-group">
+                    <a href="<?= build_filter_url(['per_page' => 8]) ?>"
+                       class="btn <?= is_filter_active('per_page', 8) || ($per_page == 8) ? 'btn-dark' : 'btn-secondary' ?>">8</a>
+                    <a href="<?= build_filter_url(['per_page' => 16]) ?>"
+                       class="btn <?= is_filter_active('per_page', 16) || ($per_page == 16) ? 'btn-dark' : 'btn-secondary' ?>">16</a>
+                    <a href="<?= build_filter_url(['per_page' => 24]) ?>"
+                       class="btn <?= is_filter_active('per_page', 24) || ($per_page == 24) ? 'btn-dark' : 'btn-secondary' ?>">24</a>
+                </div>
             </div>
         </div>
     </div>
@@ -27,51 +37,131 @@
 <!--START: PAGE -->
 <div class="row">
     <!--START: FILTRE -->
-    <div class="col-md-2 ">
-        <span class="h3">FILTRES</span>
-        <?php echo form_open(build_filter_url(), ['method' => 'get']); ?>
-        <div class="mb-3">
-            <input type="text" name="search" class="form-control" placeholder="Rechercher..."
-                   value="<?= get_current_filter_value('search', '') ?>">
+    <div class="col-md-3 ">
+        <!--START: FILTRE ACTIF -->
+        <?php
+        if (!empty(array_diff_key($_GET, array_flip(['page', 'per_page', 'sort'])))) { ?>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <span class="h5">Filtres Actifs</span>
+                </div>
+                <div class="card-body">
+                    <?php
+                    foreach ($_GET as $key => $value):
+                        if ($key !== "per_page" && $key !== "page" && $key !== "sort"):
+                            switch ($key) :
+                                case 'alcool' :
+                                    ?>
+                                    <a class="btn btn-sm btn-dark mb-1"
+                                       href="<?= build_filter_url([], true, null, [$key]); ?>">
+                                        <?= $value == '0' ? 'Sans Alcool' : "Avec Alcool"; ?> <i
+                                                class="fas fa-xmark"></i>
+                                    </a>
+                                    <?php
+                                    break;
+                                case 'ingredients':
+                                    //Nettoie les doublons dans la liste des ingrédients
+                                    $value = array_unique($value);
+                                    foreach ($value as $key2 => $ing) : ?>
+                                        <a class="btn btn-sm btn-dark mb-1"
+                                           href="<?= build_filter_url([], true, null, ['ingredients' => [$key2]]); ?>">
+                                            <?= Model('IngredientModel')->select("name")->where('id', $ing)->first()->name ?? "???" ?>
+                                            <i class="fas fa-xmark"></i>
+                                        </a>
+                                    <?php
+                                    endforeach;
+                                    break;
+                                default:
+                                    ?>
+                                    <a class="btn btn-sm btn-dark mb-1"
+                                       href="<?= build_filter_url([], true, null, [$key]); ?>">
+                                        <?= $key ?> <i class="fas fa-xmark"></i>
+                                    </a>
+                                    <?php
+                                    break;
+                            endswitch;
+                        endif;
+                    endforeach; ?>
+                </div>
+            </div>
+            <?php
+        }
+
+        ?>
+        <!--END: FILTRE ACTIF -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <span class="h5">FILTRES</span>
+            </div>
+            <div class="card-body">
+                <?php echo form_open(build_filter_url(), ['method' => 'get'], $_GET); ?>
+                <?php if (!is_filter_active('alcool', ['0', '1'])) : ?>
+                    <div class="btn-group mb-2">
+                        <input type="radio" class="btn-check" name="alcool" value="1" id="alcool-r-1"
+                               autocomplete="off">
+                        <label for="alcool-r-1" class="btn btn-sm btn-outline-dark">Avec Alcool</label>
+                        <input type="radio" class="btn-check" name="alcool" value="0" id="alcool-r-2"
+                               autocomplete="off">
+                        <label for="alcool-r-2" class="btn btn-sm btn-outline-dark">Sans Alcool</label>
+                    </div>
+                    <hr>
+                <?php endif; ?>
+                <div class="my-2">
+                    <span class="h6">Filtrer par ingrédients</span>
+                </div>
+                <div id="zone-ingredients">
+                </div>
+                <div class="mb-3">
+                    <span class="btn btn-dark" id="add-ingredient">
+                        <i class="fas fa-plus"></i> Ajouter un ingrédient
+                    </span>
+                </div>
+
+            </div>
+            <div class="card-footer d-grid">
+                <button type="submit" class="btn btn-dark">Filtrer</button>
+            </div>
+            <?php echo form_close(); ?>
+
         </div>
-        <div class="form-check">
-            <input type="checkbox" name="alcool" value="1" class="form-check-input" id="alcool"
-                <?= is_filter_active('alcool', 1) ? 'checked' : '' ?>>
-            <label class="form-check-label" for="alcool">Avec alcool</label>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" name="ingredients[]" value="tomate" class="form-check-input" id="tomate"
-                <?= is_filter_active('ingredients', 'tomate') ? 'checked' : '' ?>>
-            <label class="form-check-label" for="tomate">Tomate</label>
-        </div>
-        <div class="form-check">
-            <input type="checkbox" name="ingredients[]" value="fromage" class="form-check-input" id="fromage"
-                <?= is_filter_active('ingredients', 'fromage') ? 'checked' : '' ?>>
-            <label class="form-check-label" for="fromage">Fromage</label>
-        </div>
-        <button type="submit" class="btn btn-primary">Filtrer</button>
-        <?php echo form_close(); ?>
+
+
     </div>
     <!--END: FILTRE -->
     <!--START: CONTENUS -->
     <div class="col p-4">
         <!--START: RECETTES -->
-        <div class="row row-cols-2 row-cols-md-4 g-4">
+        <div class="row row-cols-2 row-cols-md-4 all-recipes">
             <?php foreach ($recipes as $recipe): ?>
-                <div class="col">
-                    <div class="card h-100 d-flex flex-column">
-                        <img class="card-img-top" src="<?= base_url($recipe['mea']);?>" alt="<?= htmlspecialchars($recipe['name']); ?>" style="height: 200px; object-fit: cover;">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">
-                                <?= htmlspecialchars($recipe['name']); ?>
-                            </h5>
-                            <div class="mb-3">
-                                <?= $recipe['score']; ?>
+                <div class="col mb-4">
+                    <div class="card ls-recipe h-100">
+                        <div class="position-relative">
+                            <div class="ribbon position-absolute text-bg-<?= (isset($recipe['alcool']) && $recipe['alcool'] == '1' ) ? "danger" : "dark"; ?> px-2 shadow">
+                               <?= (isset($recipe['alcool']) && $recipe['alcool'] == '1') ? "Alcool" : "Sans alcool";
+                                ?>
                             </div>
-                            <div class="d-grid mt-auto">
-                                <a href="<?= base_url('recette/'.$recipe['slug']); ?>" class="btn btn-primary">
-                                    <i class="fas fa-eye"></i> Voir la recette
-                                </a>
+                        <a href="<?= base_url('recette/' . $recipe['slug']); ?>">
+                            <img class="card-img-top img-fluid" src="<?= base_url($recipe['mea']); ?>">
+                        </a>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title h5">
+                                <?= $recipe['name']; ?>
+                            </div>
+                            <div class="mb-2">
+                                <?php
+                                for ($i = 0; $i < 5; $i++) {
+                                    if ($i < $recipe['score']) {
+                                        echo '<i class="fas fa-star"></i>';
+                                    } else {
+                                        echo '<i class="far fa-star"></i>';
+                                    }
+                                }
+                                ?>
+                            </div>
+                            <div class="d-grid">
+                                <a href="<?= base_url('recette/' . $recipe['slug']); ?>" class="btn btn-dark"><i
+                                            class="fas fa-eye"></i> Voir la recette</a>
                             </div>
                         </div>
                     </div>
@@ -82,28 +172,12 @@
         <!--START: PAGINATION -->
         <div class="row">
             <div class="col">
-                <div class="d-flex justify-content-center">
-                    <nav aria-label="...">
-                        <ul class="pagination">
-                            <?php if ($current_page > 1): ?>
-                                <li class="page-item">
-                                    <a href="<?= get_pagination_url($current_page - 1) ?>" class="page-link">Previous</a>
-                                </li>
-                            <?php endif; ?>
-                            <?php if ($pager): ?>
-                                <div class="d-flex justify-content-center">
-                                    <?= $pager->links('default', 'bootstrap_full') ?>
-                                </div>
-                            <?php endif; ?>
-                            <li class="page-item">
-                                <a class="page-link" href="<?= get_pagination_url($current_page + 1) ?>">Next</a>
-                            </li>
-                            <li class="page-item">
-                                <a href="<?= remove_filter_url(['alcool', 'per_page', 'page']) ?>" class="btn btn-outline-secondary">Réinitialiser</a>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
+                <?php if ($pager): ?>
+                    <div class="d-flex justify-content-center">
+                        <?= $pager->links('default', 'bootstrap_full') ?>
+                    </div>
+                <?php endif; ?>
+
             </div>
         </div>
         <!--END: PAGINATION -->
@@ -111,3 +185,35 @@
     <!--END: CONTENUS -->
 </div>
 <!--END: PAGE -->
+<script>
+    $(document).ready(function () {
+        baseUrl = "<?= base_url(); ?>";
+        $('#add-ingredient').on('click', function () {
+            let row = `
+                <div class="row mb-3 row-ingredient">
+                    <div class="col">
+                        <div class="input-group">
+                            <select class="form-select flex-fill select-ingredient" name="ingredients[]">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#zone-ingredients').append(row);
+            initAjaxSelect2('#zone-ingredients .row-ingredient:last-child .select-ingredient', {
+                url: baseUrl + 'api/ingredient/all',
+                placeholder: 'Rechercher un ingrédient...',
+                searchFields: 'name',
+                showDescription: false,
+                delay: 250
+            });
+        });
+    })
+</script>
+<style>
+    .ribbon {
+        bottom: 15px;
+        right: 0px;
+        border-radius: var(--bs-border-radius) 0px 0px var(--bs-border-radius);
+    }
+</style>

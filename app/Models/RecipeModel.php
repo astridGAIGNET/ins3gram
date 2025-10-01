@@ -171,11 +171,22 @@ class RecipeModel extends Model
 
     private function applyFilters($filters = []) {
 
-            if (isset($filters['alcool']) && $filters['alcool'] == 1) {
-                $this->where('recipe.alcool', 1);
+            if (isset($filters['alcool'])) {
+                if( $filters['alcool'] == 1) {
+                    $this->where('recipe.alcool', 1);
+                }else if ($filters['alcool'] == 0) {
+                    $this->where('recipe.alcool', 0);
+                }
             }
-            if (!empty($filters['search'])) {
-                $this->like('name', $filters['search']);
+            if (isset($filters['search']) && !empty(trim($filters['search']))) {
+                $search = trim($filters['search']);
+                $this->like('recipe.name', $search);
+            }
+            if (isset($filters['ingredients']) && !empty($filters['ingredients'])) {
+                $ingredientIds = $filters['ingredients'];
+                $this->join('quantity', 'recipe.id = quantity.id_recipe');
+                $this->whereIn('quantity.id_recipe', $ingredientIds);
+                $this->having('COUNT(DISTINCT quantity.id_ingredient) >=', count($ingredientIds));
             }
             return $this;
     }
