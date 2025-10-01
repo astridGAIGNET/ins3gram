@@ -17,6 +17,7 @@ class Recipe extends BaseController
             'sort' => $this->request->getGet('sort'),
             'search' => $this->request->getGet('search'),
         ];
+        if (!empty($filters['ingredients'])) $filters['ingredients'] = array_unique($filters['ingredients']);
         // Paramètres de tri et pagination
         $orderBy = $this->request->getGet('order_by') ?? 'name';
         $perPage = (int)($this->request->getGet('per_page') ?? 8);
@@ -35,6 +36,7 @@ class Recipe extends BaseController
             'recipes' => $result['data'],
             'pager' => $result['pager'],
             'current_page' => $currentPage,
+            'per_page' => $perPage,
             'filters' => $filters
         ], false);
     }
