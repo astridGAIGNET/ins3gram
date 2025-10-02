@@ -131,7 +131,7 @@
     <!--START: CONTENUS -->
     <div class="col p-4">
         <!--START: RECETTES -->
-        <div class="row row-cols-2 row-cols-md-4 all-recipes">
+        <div class="row row-cols-2 row-cols-lg-4 all-recipes">
             <?php foreach ($recipes as $recipe): ?>
                 <div class="col mb-4">
                     <div class="card ls-recipe h-100">
