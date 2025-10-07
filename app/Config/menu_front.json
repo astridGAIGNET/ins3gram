@@ -4,12 +4,5 @@
     "url": "/recette",
     "icon": "<i class=\"nav-icon fa-solid fa-martini-glass-citrus\"></i>",
     "class": ""
-  },
-  "administration": {
-    "title": "Administration",
-    "url": "/admin",
-    "require": "administrateur",
-    "icon": "<i class=\"nav-icon fas fa-gear\"></i>",
-    "class": ""
   }
 }

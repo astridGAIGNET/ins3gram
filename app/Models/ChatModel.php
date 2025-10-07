@@ -12,17 +12,15 @@ class ChatModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['content', 'id_sender', 'id_receiver'];
+    protected $allowedFields    = ['content','id_sender','id_receiver'];
 
-    // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    // Validation
-    protected $validationRules      = [
+    protected $validationRules = [
         'content'    => 'required|string|max_length[255]',
         'id_sender'  => 'required|integer',
         'id_receiver'=> 'required|integer',
@@ -42,10 +40,35 @@ class ChatModel extends Model
             'integer'  => 'L’ID du destinataire doit être un nombre.',
         ],
     ];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
 
+    public function getConversation($user1, $user2, $page) {
+        $data = $this->groupStart()
+            ->where('id_sender', $user1)
+            ->where('id_receiver', $user2)
+            ->groupEnd()
+            ->orGroupStart()
+            ->where('id_sender', $user2)
+            ->where('id_receiver', $user1)
+            ->groupEnd()
+            ->orderBy('created_at', 'DESC')
+            ->paginate(10, 'default', $page);
+        return [
+            'data' => $data,
+            'max_page' => $this->pager->getPageCount()
+        ];
+    }
 
-    protected $beforeDelete   = [];
-
+    public function getNewMessages($user1, $user2, $date) {
+        $data = $this->groupStart()
+            ->where('id_sender', $user1)
+            ->where('id_receiver', $user2)
+            ->groupEnd()
+            ->orGroupStart()
+            ->where('id_sender', $user2)
+            ->where('id_receiver', $user1)
+            ->groupEnd()
+            ->where('created_at >', $date)
+            ->orderBy('created_at', 'DESC');
+        return $data->findAll();
+    }
 }

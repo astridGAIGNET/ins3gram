@@ -7,17 +7,17 @@
             <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">
                 <i class="fas fa-user"></i>
             </a>
-            <ul class="dropdown-menu drop-menu-end">
+            <ul class="dropdown-menu dropdown-menu-end">
                 <?php
                 if(isset($session_user)) :
                     if ($session_user->isAdmin()) : ?>
                         <li>
-                            <a class="dropdown-item" href="<?= base_url('admin/dashboard'); ?>">Administrateur</a>
+                            <a class="dropdown-item" href="<?= base_url('/admin/dashboard'); ?>">Admin</a>
                         </li>
-                        <li><hr class="dropdown-divider"</li>
+                        <li><hr class="dropdown-divider"></li>
                     <?php endif; ?>
                     <li>
-                        <a class="dropdown-item" href="<?= base_url(); ?>">Mon profil</a>
+                        <a class="dropdown-item" href="<?= base_url(); ?>">Mon Profil</a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="<?= base_url('/auth/logout'); ?>">Se déconnecter</a>
@@ -33,6 +33,7 @@
                 ?>
             </ul>
         </div>
+
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -82,17 +83,21 @@
                     <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">
                         <i class="fas fa-user"></i>
                     </a>
-                    <ul class="dropdown-menu dorpdown-menu-end">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <?php
                         if(isset($session_user)) :
                             if ($session_user->isAdmin()) : ?>
                                 <li>
-                                    <a class="dropdown-item" href="<?= base_url('admin/dashboard'); ?>">Administrateur</a>
+                                    <a class="dropdown-item" href="<?= base_url('/admin/dashboard'); ?>">Admin</a>
                                 </li>
-                                <li><hr class="dropdown-divider"</li>
+                                <li><hr class="dropdown-divider"></li>
                             <?php endif; ?>
                             <li>
-                                <a class="dropdown-item" href="<?= base_url(); ?>">Mon profil</a>
+                                <a class="dropdown-item" href="<?= base_url(); ?>">Mon Profil</a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item" href="<?= base_url('/messagerie'); ?>">Messagerie</a>
                             </li>
                             <li>
                                 <a class="dropdown-item" href="<?= base_url('/auth/logout'); ?>">Se déconnecter</a>
@@ -101,11 +106,15 @@
                             <li>
                                 <a class="dropdown-item" href="<?= base_url('sign-in'); ?>">Se connecter</a>
                             </li>
+                            <li>
+                                <a class="dropdown-item" href="<?= base_url('register'); ?>">S'inscrire</a>
+                            </li>
                         <?php endif;
                         ?>
                     </ul>
                 </li>
             </ul>
         </div>
+
     </div>
 </nav>

@@ -18,4 +18,11 @@ $routes->group('user', function ($routes) {
     $routes->post('update', 'User::update');
 });
 
+$routes->group('messagerie', ['filter' => 'auth'], function ($routes) {
+    $routes->get('/', 'Chat::index');
+    $routes->get('conversation', 'Chat::conversation');
+    $routes->get('new-messages', 'Chat::newMessages');
+    $routes->post('send', 'Chat::send');
+});
+
 $routes->post('/datatable/searchdatatable', 'DataTable::searchdatatable');

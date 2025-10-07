@@ -4,7 +4,7 @@
             <div class="card-header h4">
                 <?php if (isset($ingredient)) : ?>
                     <!-- Si l'ingrédient existe déjà : on affiche "Modification" -->
-                    Modification de <?= esc($ingredient->name); ?>
+                    Modification de <?= esc($ingredient['name']); ?>
                 <?php else : ?>
                     <!-- Sinon : on affiche "Création d'un nouvel ingrédient" -->
                     Création d'un nouvel ingrédient
@@ -15,7 +15,7 @@
             if (isset($ingredient)):
                 echo form_open_multipart('admin/ingredient/update', ['class' => 'needs-validation', 'novalidate' => true]); ?>
                 <!-- Champ caché pour stocker l'ID de l'ingrédient lors de la modification -->
-                <input type="hidden" name="id" value="<?= $ingredient->id ?>">
+                <input type="hidden" name="id" value="<?= $ingredient['id'] ?>">
             <?php
             else:
                 echo form_open_multipart('admin/ingredient/insert', ['class' => 'needs-validation', 'novalidate' => true]);
@@ -29,7 +29,7 @@
                                 <div class="form-floating mb-3">
                                     <input id="name" class="form-control" placeholder="Nom de l'ingrédient" type="text"
                                            name="name"
-                                           value="<?= isset($ingredient) ? esc($ingredient->name) : set_value('name') ?>"
+                                           value="<?= isset($ingredient) ? esc($ingredient['name']) : set_value('name') ?>"
                                            required>
                                     <label for="name">Nom de l'ingrédient</label>
                                 </div>
@@ -38,7 +38,7 @@
                                 <div class="form-floating mb-3">
                                     <input id="description" class="form-control" placeholder="Description" type="text"
                                            name="description"
-                                           value="<?= isset($ingredient) ? esc($ingredient->description) : set_value('description') ?>"
+                                           value="<?= isset($ingredient) ? esc($ingredient['description']) : set_value('description') ?>"
                                            required>
                                     <label for="description">Description</label>
                                 </div>
@@ -52,7 +52,7 @@
                                             <?php if (isset($brands) && is_array($brands)) : ?>
                                                 <?php foreach ($brands as $brand) : ?>
                                                     <option value="<?= $brand['id'] ?>"
-                                                        <?= (isset($ingredient) && $ingredient->id_brand == $brand['id']) ? 'selected' : '' ?>>
+                                                        <?= (isset($ingredient) && $ingredient['id_brand'] == $brand['id']) ? 'selected' : '' ?>>
                                                         <?= esc($brand['name']) ?>
                                                     </option>
                                                 <?php endforeach; ?>
@@ -72,7 +72,7 @@
                                             <?php if (isset($categs) && is_array($categs)) : ?>
                                                 <?php foreach ($categs as $categ) : ?>
                                                     <option value="<?= $categ['id'] ?>"
-                                                        <?= (isset($ingredient) && $ingredient->id_categ == $categ['id']) ? 'selected' : '' ?>>
+                                                        <?= (isset($ingredient) && $ingredient['id_categ'] == $categ['id']) ? 'selected' : '' ?>>
                                                         <?= esc($categ['name']) ?>
                                                     </option>
                                                 <?php endforeach; ?>
@@ -87,9 +87,9 @@
                             </div>
                             <div class="mt-3">
                                 <label for="mea" class="form-label">Image Principale</label>
-                                <?php if (isset($ingredient->mea) && !empty($ingredient->mea)) : ?>
+                                <?php if (isset($ingredient['mea']) && !empty($ingredient['mea'])) : ?>
                                     <div class="text-center mb-3 ">
-                                        <img class="img-thumbnail" src="<?= base_url($ingredient->mea['file_path']); ?>">
+                                        <img class="img-thumbnail" src="<?= base_url($ingredient['mea']['file_path']); ?>">
                                     </div>
                                 <?php endif; ?>
                                 <input id="mea" type="file" name="mea" class="form-control">
@@ -121,11 +121,11 @@
                                                     <option value="">Choisir un ingrédient de substitution</option>
                                                     <?php if (isset($subs) && is_array($subs)) : ?>
                                                         <?php foreach ($subs as $sub) : ?>
-                                                            <option value="<?= $sub->id ?>"
-                                                                <?php if (isset($ingredient->substitutes) && in_array($sub->id, $ingredient->substitutes)) : ?>
+                                                            <option value="<?= $sub['id'] ?>"
+                                                                <?php if (isset($ingredient['substitutes']) && in_array($sub['id'], $ingredient['substitutes'])) : ?>
                                                                     selected
                                                                 <?php endif; ?>>
-                                                                <?= esc($sub->name) ?>
+                                                                <?= esc($sub['name']) ?>
                                                             </option>
                                                         <?php endforeach; ?>
                                                     <?php endif; ?>

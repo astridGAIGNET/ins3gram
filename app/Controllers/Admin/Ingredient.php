@@ -127,7 +127,7 @@ class Ingredient extends BaseController
         $subs = Model('IngredientModel')->findAll(); // TOUS les ingrédients pour le select
 
         // Initialiser le tableau des substituts
-        $ingredient->substitutes = [];
+        $ingredient['substitutes'] = [];
 
         //Gestion des mots substituts à notre ingredient
         if($id_ingredient != null) {
@@ -135,20 +135,20 @@ class Ingredient extends BaseController
             $existing_substitutes = Model('SubstituteModel')->where('id_ingredient_base', $id_ingredient)->findAll();
             //Création d'un tableau à une dimension pour utiliser in_array (directement dans notre tableau ingredient)
             foreach ($existing_substitutes as $substitute) {
-                $ingredient->substitutes[] = $substitute['id_ingredient_sub'];
+                $ingredient['substitutes'][] = $substitute['id_ingredient_sub'];
             }
         } else { //Cas d'un slug (notamment pour l'affichage en Front office)
-            $ingredient->substitutes = Model('SubsituteModel')->join('substitute', 'ingredient.id = substitute.id_ingredient_sub')->where('id_ingredient_base', $id_ingredient)->findAll();
+            $ingredient['substitutes'] = Model('SubsituteModel')->join('substitute', 'ingredient.id = substitute.id_ingredient_sub')->where('id_ingredient_base', $id_ingredient)->findAll();
         }
         $mediamodel = Model('MediaModel');
         //Récupération de l'image principale et stocker dans le tableau ingredient
-        $ingredient->mea = $mediamodel->where('entity_id', $id_ingredient)->where('entity_type', 'ingredient')->first();
+        $ingredient['mea'] = $mediamodel->where('entity_id', $id_ingredient)->where('entity_type', 'ingredient')->first();
 
         return $this->view('/admin/ingredient/form', [
             'ingredient' => $ingredient,
             'brands' => $brands,
             'categs' => $categs,
-            'subs' => $subs // Tous les ingrédients disponibles
+            'subs' => $subs,// Tous les ingrédients disponibles
         ]);
     }
 
