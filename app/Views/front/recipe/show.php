@@ -21,22 +21,11 @@
 
             <!-- SYSTEME DE NOTATION ETOILES-->
             <div class="star-rating justify-content-center">
-                <input type="radio" name="star-rating" id="star1" value="1" />
-                <label for="star1">&#9734</label>
-
-                <input type="radio" name="star-rating" id="star2" value="2" />
-                <label for="star2">&#9734</label>
-
-                <input type="radio" name="star-rating" id="star3" value="3" />
-                <label for="star3">&#9734</label>
-
-                <input type="radio" name="star-rating" id="star4" value="4" />
-                <label for="star4">&#9734</label>
-
-                <input type="radio" name="star-rating" id="star5" value="5" />
-                <label for="star5">&#9734</label>
+                <?php for ($i = 1; $i <= 5; $i++): ?>
+                    <input type="radio" name="star-rating" id="star<?= $i ?>" value="<?= $i ?>"/>
+                    <label for="star<?= $i ?>">&#9734;</label>
+                <?php endfor; ?>
             </div>
-
             <p class="mt-3">Note sélectionnée : <span id="rating-value">0</span> / 5</p>
         </div>
         <!-- END: OPINION -->
@@ -86,20 +75,22 @@
 <!-- START: INGREDIENTS -->
 <div class="container-lg">
     <div class="row bg-secondary-subtle py-4">
-        <?php foreach ($ingredients as $ingredient): ?>
+        <h4>Ingrédients :</h4>
+        <?php foreach ($recipe['ingredients'] as $ingredient): ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3">
                 <div class="card ingredient h-100">
-                    <?php if ($ingredient['mea']): ?>
-                        <img src="<?= base_url($ingredient['mea']) ?>" class="card-img-top"
-                             alt="<?= esc($ingredient['name']) ?>" style="height: 200px; object-fit: cover;">
-                    <?php else: ?>
-                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
-                             style="height: 200px;">
+                    <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
+                         style="height: 200px;">
+                        <?php if ($ingredient['mea']): ?>
+                            <a href="<?= base_url('recette/'.$recipe['slug']); ?>">
+                                <img class="card-img-top img-fluid" src="<?= base_url($ingredient['mea']);?>" style="object-fit: cover;">>
+                            </a>
+                        <?php else: ?>
                             <img src="<?= base_url('assets/img/no-img-2.png') ?>" class="card-img-top"
                                  alt="Image par défaut"
                                  style="height: 120px; object-fit: contain; background-color: #f8f9fa;">
-                        </div>
-                    <?php endif; ?>
+                    </div>
+                        <?php endif; ?>
                     <div class="card-title text-center">
                         <h6 class="card-title"><?= esc($ingredient['ingredient']) ?></h6>
                     </div>
@@ -152,23 +143,38 @@
 <!-- START: ETAPES -->
 <div class="container-lg">
     <div class="row bg-secondary-subtle py-4">
-        <?php if (isset($recipe['steps'])) : ?>
-        <?php foreach ($recipe['steps'] as $step) : ?>
-        <div class="col-4">
-            <div id="#zone-steps" class="list-group">
-                <a class="list-group-item list-group-item-action" href="#list-step<?= $step['order']; ?>" data-bs-target="#step-<?= $step['order']; ?>" >Étape <?= $step['order']; ?></a>
+        <?php if (isset($recipe['steps']) && !empty($recipe['steps'])) : ?>
+            <!-- UNE SEULE NAVBAR pour toutes les étapes -->
+            <nav id="navbar-step" class="navbar bg-body-secondary-subtle px-3 mb-3">
+                <span class="h4">Étapes de la recette :</span>
+                <ul class="nav nav-pills">
+                    <?php foreach ($recipe['steps'] as $step) : ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#step-<?= $step['order']; ?>">
+                                Étape <?= $step['order']; ?>
+                            </a>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            </nav>
+
+            <!-- UNE SEULE zone scrollspy avec toutes les étapes dedans -->
+        <div class="bg-secondary-subtle p-4">
+            <div data-bs-spy="scroll"
+                 data-bs-target="#navbar-step"
+                 data-bs-root-margin="0px 0px -40%"
+                 data-bs-smooth-scroll="true"
+                 class="scrollspy-example bg-body-tertiary p-4 rounded-3 shadow"
+                 tabindex="0"
+                 style="max-height: 300px; overflow-y: auto;">
+
+                <?php foreach ($recipe['steps'] as $step) : ?>
+                    <h5 id="step-<?= $step['order']; ?>">Étape <?= $step['order']; ?></h5>
+                    <p><?= nl2br($step['description']) ?></p>
+                <?php endforeach; ?>
             </div>
-        </div>
-        <div class="col-8">
-            <div data-bs-spy="scroll" data-bs-target="#list-example" data-bs-smooth-scroll="true"
-                 class="scrollspy-example" tabindex="1" data-bs-parent="#zone-steps" >
-                <h4 id="list-step<?= $step['order']; ?>"
-                    ></h4>
-                <p class="text" value="steps[<?= $step['order']; ?>][description]"><?= $step['description'] ?></p>
-            </div>
-        </div>
-        <?php endforeach; ?>
         <?php endif; ?>
+        </div>
     </div>
 </div>
 <!-- END: ETAPES -->
@@ -220,7 +226,7 @@
 
     // Au clic : enregistrer la note
     ratingInputs.forEach((input, index) => {
-        input.addEventListener('change', function() {
+        input.addEventListener('change', function () {
             currentRating = parseInt(this.value);
             ratingValue.textContent = currentRating;
             updateStars(currentRating);
@@ -229,13 +235,13 @@
 
     // Au survol : prévisualiser
     ratingLabels.forEach((label, index) => {
-        label.addEventListener('mouseenter', function() {
+        label.addEventListener('mouseenter', function () {
             updateStars(index + 1);
         });
     });
 
     // Quand on quitte la zone : revenir à la note enregistrée
-    document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+    document.querySelector('.star-rating').addEventListener('mouseleave', function () {
         updateStars(currentRating);
     });
 
@@ -243,7 +249,7 @@
     const opinionInput = document.getElementById('opinion');
     const heartLabel = document.getElementById('heart-label');
 
-    opinionInput.addEventListener('change', function() {
+    opinionInput.addEventListener('change', function () {
         if (this.checked) {
             heartLabel.textContent = '♥'; // Cœur plein
         } else {
@@ -287,5 +293,17 @@
         font-size: 40px;
         color: #000;
         line-height: 1;
+    }
+    #navbar-step .nav-link {
+        color: #000;
+    }
+
+    #navbar-step .nav-link.active {
+        background-color: #000;
+        color: #fff;
+    }
+
+    #navbar-step .nav-link:hover {
+        color: #000;
     }
 </style>

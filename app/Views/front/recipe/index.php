@@ -65,7 +65,7 @@
                                     foreach ($value as $key2 => $ing) : ?>
                                         <a class="btn btn-sm btn-dark mb-1"
                                            href="<?= build_filter_url([], true, null, ['ingredients' => [$key2]]); ?>">
-                                            <?= Model('IngredientModel')->select("name")->where('id', $ing)->first()->name ?? "???" ?>
+                                            <?= Model('IngredientModel')->select("name")->where('id', $ing)->first()['name'] ?? "???" ?>
                                             <i class="fas fa-xmark"></i>
                                         </a>
                                     <?php
@@ -122,27 +122,23 @@
                 <button type="submit" class="btn btn-dark">Filtrer</button>
             </div>
             <?php echo form_close(); ?>
-
         </div>
-
-
     </div>
     <!--END: FILTRE -->
     <!--START: CONTENUS -->
     <div class="col p-4">
         <!--START: RECETTES -->
-        <div class="row row-cols-2 row-cols-lg-4 all-recipes">
+        <div class="row row-cols-2 row-cols-md-4 all-recipes">
             <?php foreach ($recipes as $recipe): ?>
                 <div class="col mb-4">
                     <div class="card ls-recipe h-100">
                         <div class="position-relative">
-                            <div class="ribbon position-absolute text-bg-<?= (isset($recipe['alcool']) && $recipe['alcool'] == '1' ) ? "danger" : "dark"; ?> px-2 shadow">
-                               <?= (isset($recipe['alcool']) && $recipe['alcool'] == '1') ? "Alcool" : "Sans alcool";
-                                ?>
+                            <div class="ribbon position-absolute text-bg-<?= (isset($recipe['alcool']) && $recipe['alcool'] == '1' ) ? "danger" : "primary";  ?> px-2 shadow">
+                                <?= (isset($recipe['alcool']) && $recipe['alcool'] == '1' ) ? "Alcool" : "Sans alcool";  ?>
                             </div>
-                        <a href="<?= base_url('recette/' . $recipe['slug']); ?>">
-                            <img class="card-img-top img-fluid" src="<?= base_url($recipe['mea']); ?>">
-                        </a>
+                            <a href="<?= base_url('recette/'.$recipe['slug']); ?>">
+                                <img class="card-img-top img-fluid" src="<?= base_url($recipe['mea']);?>">
+                            </a>
                         </div>
                         <div class="card-body">
                             <div class="card-title h5">
@@ -150,8 +146,8 @@
                             </div>
                             <div class="mb-2">
                                 <?php
-                                for ($i = 0; $i < 5; $i++) {
-                                    if ($i < $recipe['score']) {
+                                for($i = 0; $i < 5; $i++) {
+                                    if ($i< $recipe['score']) {
                                         echo '<i class="fas fa-star"></i>';
                                     } else {
                                         echo '<i class="far fa-star"></i>';
@@ -160,8 +156,7 @@
                                 ?>
                             </div>
                             <div class="d-grid">
-                                <a href="<?= base_url('recette/' . $recipe['slug']); ?>" class="btn btn-dark"><i
-                                            class="fas fa-eye"></i> Voir la recette</a>
+                                <a href="<?= base_url('recette/'.$recipe['slug']); ?>" class="btn btn-dark"><i class="fas fa-eye"></i> Voir la recette</a>
                             </div>
                         </div>
                     </div>

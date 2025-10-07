@@ -94,7 +94,6 @@
                     },
 
             success: function(response) {
-                myModal.hide();
                 if (response.success) {
                     Swal.fire({
                         title: 'Succès !',

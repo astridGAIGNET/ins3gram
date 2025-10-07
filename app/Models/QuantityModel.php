@@ -46,7 +46,7 @@ class QuantityModel extends Model
         $this->select('quantity.*, ingredient.name as ingredient, unit.name as unit, media.file_path as mea' );
         $this->join('ingredient', 'ingredient.id = quantity.id_ingredient', 'left');
         $this->join('unit', 'unit.id = quantity.id_unit', 'left');
-        $this->join('media', 'ingredient.id = media.entity_id AND media.entity_type = \'ingredient_mea\'', 'left');
+        $this->join('media', 'ingredient.id = media.entity_id AND media.entity_type = \'ingredient\'', 'left');
         $this->where('id_recipe', $id_recipe);
         return $this->findAll();
     }

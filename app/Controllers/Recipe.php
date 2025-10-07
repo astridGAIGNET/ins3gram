@@ -48,7 +48,7 @@ class Recipe extends BaseController
 
         if($recipe) {
             $this->title = "recipe : " . $recipe['name'];
-            return $this->view('front/recipe/show', ['recipe' => $recipe, 'ingredients' => $recipe['ingredients']], false);
+            return $this->view('front/recipe/show', ['recipe' => $recipe], false);
         }
         return $this->view('templates/404.php', [], false);
     }
