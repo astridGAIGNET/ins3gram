@@ -78,20 +78,19 @@
         <h4>Ingrédients :</h4>
         <?php foreach ($recipe['ingredients'] as $ingredient): ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3">
-                <div class="card ingredient h-100">
+                <div class="card ingredient h-100 shadow">
                     <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
                          style="height: 200px;">
                         <?php if ($ingredient['mea']): ?>
-                            <a href="<?= base_url('recette/'.$recipe['slug']); ?>">
-                                <img class="card-img-top img-fluid" src="<?= base_url($ingredient['mea']);?>" style="object-fit: cover;">>
-                            </a>
+                            <img src="<?= base_url($ingredient['mea']);?>" alt="<?= esc($ingredient['ingredient']) ?>"
+                                 style="width: 100%; height: 100%; object-fit: cover;">
                         <?php else: ?>
-                            <img src="<?= base_url('assets/img/no-img-2.png') ?>" class="card-img-top"
+                            <img src="<?= base_url('assets/img/no-img-2.png') ?>"
                                  alt="Image par défaut"
                                  style="height: 120px; object-fit: contain; background-color: #f8f9fa;">
-                    </div>
                         <?php endif; ?>
-                    <div class="card-title text-center">
+                    </div>
+                    <div class="card-title text-center mt-2">
                         <h6 class="card-title"><?= esc($ingredient['ingredient']) ?></h6>
                     </div>
                     <div class="card-body text-center">
