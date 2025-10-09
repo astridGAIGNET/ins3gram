@@ -71,6 +71,18 @@
                                     <?php
                                     endforeach;
                                     break;
+                                case 'tags':
+                                    //Nettoie les doublons dans la liste des ingrédients
+                                    $value = array_unique($value);
+                                    foreach ($value as $key2 => $tag) : ?>
+                                        <a class="btn btn-sm btn-dark mb-1"
+                                           href="<?= build_filter_url([], true, null, ['tags' => [$key2]]); ?>">
+                                            <?= Model('TagModel')->select("name")->where('id', $tag)->first()['name'] ?? "???" ?>
+                                            <i class="fas fa-xmark"></i>
+                                        </a>
+                                    <?php
+                                    endforeach;
+                                    break;
                                 default:
                                     ?>
                                     <a class="btn btn-sm btn-dark mb-1"
@@ -107,7 +119,7 @@
                     <hr>
                 <?php endif; ?>
                 <div class="my-2">
-                    <span class="h6">Filtrer par ingrédients</span>
+                    <span class="h6">Filtrer par ingrédient(s)</span>
                 </div>
                 <div id="zone-ingredients">
                 </div>
@@ -116,7 +128,17 @@
                         <i class="fas fa-plus"></i> Ajouter un ingrédient
                     </span>
                 </div>
-
+                <hr>
+                <div class="my-2">
+                    <span class="h6">Filtrer par mot(s) clé(s)</span>
+                </div>
+                <div id="zone-tags">
+                </div>
+                <div class="mb-3">
+                    <span class="btn btn-dark" id="add-tag">
+                        <i class="fas fa-plus"></i> Ajouter un mot clé
+                    </span>
+                </div>
             </div>
             <div class="card-footer d-grid">
                 <button type="submit" class="btn btn-dark">Filtrer</button>
@@ -198,6 +220,26 @@
             initAjaxSelect2('#zone-ingredients .row-ingredient:last-child .select-ingredient', {
                 url: baseUrl + 'api/ingredient/all',
                 placeholder: 'Rechercher un ingrédient...',
+                searchFields: 'name',
+                showDescription: false,
+                delay: 250
+            });
+        });
+        $('#add-tag').on('click', function () {
+            let row = `
+                <div class="row mb-3 row-tag">
+                    <div class="col">
+                        <div class="input-group">
+                            <select class="form-select flex-fill select-tag" name="tags[]">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            `;
+            $('#zone-tags').append(row);
+            initAjaxSelect2('#zone-tags .row-tag:last-child .select-tag', {
+                url: baseUrl + 'api/tag/all',
+                placeholder: 'Rechercher un mot clé...',
                 searchFields: 'name',
                 showDescription: false,
                 delay: 250

@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Traits\DataTableTrait;
+use App\Traits\Select2Searchable;
 use CodeIgniter\Model;
 
 class TagModel extends Model
 {
+    use Select2Searchable;
     use DataTableTrait;
 
     protected $table            = 'tag';

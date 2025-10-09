@@ -45,7 +45,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-floating mb-3">
+                                    <div class="mb-3">
                                         <select name="id_brand" id="id_brand" class="form-select">
                                             <option value="">Choisir une marque</option>
                                             <!-- tester si la categorie parent n'est pas vide au niveau du controller -->
@@ -58,13 +58,12 @@
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
-                                        <label for="id_brand"></label>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="form-floating mb-3">
+                                    <div class="mb-3">
                                         <select name="id_categ" id="id_categ" class="form-select" required>
                                             <option value="">Choisir une catégorie <span class="text-danger">*</span>
                                             </option>
@@ -111,7 +110,7 @@
                                     </span>
                                 </div>
                                 <div id="zone-substitutes">
-                                    <div class="row mb-3 row-substitute">
+                                    <div class="row mb-3 row-substitute mt-3">
                                         <div class="col">
                                             <div class="input-group">
                                                         <span class="input-group-text">
@@ -130,6 +129,16 @@
                                                         <?php endforeach; ?>
                                                     <?php endif; ?>
                                                 </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Afficher les substituts sélectionnés -->
+                                <div class="col">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div id="liste-substitutions">
+                                                <p class="text-muted">Aucun ingredient de substitution pour le moment</p>
                                             </div>
                                         </div>
                                     </div>

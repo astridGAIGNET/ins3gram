@@ -65,6 +65,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
     });
 
     $routes->group('tag', function ($routes) {
+        $routes->get('search', 'Tag::search');
         $routes->get('/', 'Tag::index');
         $routes->post('update', 'Tag::update');
         $routes->post('insert', 'Tag::insert');
