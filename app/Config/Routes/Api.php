@@ -6,4 +6,7 @@ $routes->group('api',['namespace' => 'App\Controllers\Admin'], function ($routes
     $routes->group('user', function($routes) {
         $routes->get('all', 'User::search');
     });
+    $routes->group('tag', function($routes) {
+        $routes->get('all', 'Tag::search');
+    });
 });

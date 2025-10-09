@@ -188,6 +188,12 @@ class RecipeModel extends Model
                 $this->whereIn('quantity.id_recipe', $ingredientIds);
                 $this->having('COUNT(DISTINCT quantity.id_ingredient) >=', count($ingredientIds));
             }
+            if (isset($filters['tags']) && !empty($filters['tags'])) {
+                $tagIds = $filters['tags'];
+                $this->join('tag_recipe', 'recipe.id = tag_recipe.id_recipe');
+                $this->whereIn('tag_recipe.id_recipe', $tagIds);
+                $this->having('COUNT(DISTINCT tag_recipe.id_tag) >=', count($tagIds));
+            }
             return $this;
     }
 
