@@ -19,7 +19,7 @@
                     <div class="card-header chewy text-center h1">
                         Connexion
                     </div>
-                    <form action="<?= base_url('auth/login'); ?>" method="POST">
+                    <?= form_open('auth/login') ?>
                         <div class="card-body">
                             <div class="row flex-column align-content-center">
                                 <div class="col-6">
@@ -40,7 +40,7 @@
                                 <button type="submit" class="btn btn-primary">Se connecter</button>
                             </div>
                         </div>
-                    </form>
+                    <?= form_close() ?>
                 </div>
             </div>
         </div>

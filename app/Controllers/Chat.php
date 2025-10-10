@@ -40,7 +40,7 @@ class Chat extends BaseController
     }
 
     public function newMessages() {
-        $data = $this->request-getGet();
+        $data = $this->request->getGet();
         $cm = Model('ChatModel');
         $newMessages = $cm->getNewMessages($data['id_1'], $data['id_2'], $data['date']);
         return $this->response->setJSON($newMessages);
