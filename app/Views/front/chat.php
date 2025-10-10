@@ -29,7 +29,7 @@
         <!--END: HISTORIQUE -->
         <!--START: ZONE MESSAGE -->
         <div class="col h-100">
-            <div class="card h-100" id="zone-message">
+            <div class="card h-100 " id="zone-message">
                 <div class="card-body overflow-auto my-3">
                     <div class="row" id="messages">
 
@@ -59,6 +59,7 @@
         var page;
         var max_page;
         var last_message_date;
+
         //Ajout du SELECT2 à notre select destinataire (receiver)
         initAjaxSelect2("#receiver",{
             url: base_url + 'api/user/all',
@@ -70,7 +71,6 @@
         function loadConversation(receiverId) {
             page = 1;
             receiver = receiverId;
-
             $.ajax({
                 type: 'GET',
                 url: base_url + 'messagerie/conversation',
@@ -97,6 +97,7 @@
                     console.error(err);
                 }
             });
+
         }
         // Événement au choix d'un destinataire
         $('#receiver').on('select2:select', function (e) {
@@ -110,8 +111,8 @@
             $(this).addClass('active-conversation');
             loadConversation(receiverId);
         });
-        //Simule une action du click lors du chargement de la page
-        $('#historique .card:first-child').trigger('click');
+        $("#historique .card").first().trigger('click');
+
         //Événement au clic de l'envoi du message
         $('#send-message').on('click', function(){
             var message = $('#message').val();
@@ -207,9 +208,8 @@
                 'success' : function(data){
                     $('#historique').empty();
                     var arret = false;
-                    for(i = 0; i < data.lenght; $i++) {
-                        var active ='';
-
+                    for(i = 0; i < data.length; i++) {
+                        var active = '';
                         if(data[i].id == receiver) {
                             active = 'active-conversation';
                             arret = true;
@@ -217,7 +217,7 @@
                         if(arret == false) {
                             var new_message = 'new-message';
                         } else {
-                            var new_message ='';
+                            var new_message = '';
                         }
                         var histo = `
                             <div class="card mt-3 ${active} ${new_message}" data-id="${data[i].id}">
@@ -228,6 +228,7 @@
                             </div>
                         `;
                         $('#historique').append(histo);
+                        console.log(data[i].id);
                     }
                 },
                 'error' : function(data){
@@ -261,10 +262,12 @@
         border-color: var(--bs-primary);
         transform: scale(1.05);
     }
+
     .active-conversation {
         border-color: var(--bs-primary) !important;
     }
+
     .new-message {
-        background-color: paleturquoise;
+        background-color: var(--bs-primary) !important;
     }
 </style>
