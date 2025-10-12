@@ -72,7 +72,7 @@
                                     endforeach;
                                     break;
                                 case 'tags':
-                                    //Nettoie les doublons dans la liste des ingrédients
+                                    //Nettoie les doublons dans la liste des tags
                                     $value = array_unique($value);
                                     foreach ($value as $key2 => $tag) : ?>
                                         <a class="btn btn-sm btn-dark mb-1"
@@ -82,6 +82,22 @@
                                         </a>
                                     <?php
                                     endforeach;
+                                    break;
+                                case 'score':
+                                    // N'afficher la balise QUE si score > 0
+                                    if ((int)$value > 0) {
+                                        $stars = '';
+                                        for($i = 0; $i < (int)$value; $i++) {
+                                            $stars .= '<i class="fas fa-star"></i>';
+                                        }
+                                        ?>
+                                        <a class="btn btn-sm btn-dark mb-1"
+                                           href="<?= build_filter_url([], true, null, ['score']); ?>">
+                                            Note minimale : <?= $stars ?>
+                                            <i class="fas fa-xmark"></i>
+                                        </a>
+                                        <?php
+                                    }
                                     break;
                                 default:
                                     ?>
@@ -119,7 +135,7 @@
                     <hr>
                 <?php endif; ?>
                 <div class="my-2">
-                    <span class="h6">Filtrer par ingrédient(s)</span>
+                    <span class="h6">Filtrer par ingrédient(s) :</span>
                 </div>
                 <div id="zone-ingredients">
                 </div>
@@ -130,7 +146,7 @@
                 </div>
                 <hr>
                 <div class="my-2">
-                    <span class="h6">Filtrer par mot(s) clé(s)</span>
+                    <span class="h6">Filtrer par mot(s) clé(s) :</span>
                 </div>
                 <div id="zone-tags">
                 </div>
@@ -138,6 +154,24 @@
                     <span class="btn btn-dark" id="add-tag">
                         <i class="fas fa-plus"></i> Ajouter un mot clé
                     </span>
+                </div>
+                <hr>
+                <div class="mb-3">
+                    <div class="row">
+                        <div class="col-12 h6">
+                            Note :
+                        </div>
+                        <div class="col-12">
+                            <div data-value="0" id="scoreOpinion">
+                                <i data-value="1" class="far fa-xl fa-star"></i>
+                                <i data-value="2" class="far fa-xl fa-star"></i>
+                                <i data-value="3" class="far fa-xl fa-star"></i>
+                                <i data-value="4" class="far fa-xl fa-star"></i>
+                                <i data-value="5" class="far fa-xl fa-star"></i>
+                            </div>
+                            <p class="mt-3">Note sélectionnée : <span id="scoreValue">0</span> / 5</p>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-footer d-grid">
@@ -205,6 +239,45 @@
 <script>
     $(document).ready(function () {
         baseUrl = "<?= base_url(); ?>";
+        // Au survol d'une étoile : remplir + sauvegarder dans l'input
+        $('#scoreOpinion').on('mouseenter', '.fa-star', function(){
+            var value = $(this).data('value');
+            var stars = '';
+
+            for(i = 0; i < value; i++) {
+                stars += `<i data-value="${i+1}" class="fas fa-xl fa-star"></i>`;
+            }
+            for(i = value; i < 5; i++) {
+                stars += `<i data-value="${i+1}" class="far fa-xl fa-star"></i>`;
+            }
+
+            $('#scoreOpinion').html(stars);
+            $('#scoreOpinion').data('value', value);
+            $('#scoreValue').text(value);
+
+            // Créer ou mettre à jour l'input
+            if ($('#scoreInput').length === 0) {
+                $('form').append('<input type="hidden" name="score" id="scoreInput" value="' + value + '">');
+            } else {
+                $('#scoreInput').val(value);
+            }
+        });
+        // Clic n'importe où dans la zone des filtres (sauf sur les étoiles)
+        $('.card-body').on('click', function(e){
+            // Si on ne clique PAS sur une étoile ou sur #scoreOpinion
+            if (!$(e.target).closest('#scoreOpinion').length) {
+                var stars = '';
+                for(i = 0; i < 5; i++) {
+                    stars += `<i data-value="${i+1}" class="far fa-xl fa-star"></i>`;
+                }
+                $('#scoreOpinion').html(stars);
+                $('#scoreOpinion').data('value', 0);
+                $('#scoreValue').text(0);
+                $('#scoreInput').remove();
+            }
+        });
+
+        //Evenement au clic de l'ingredient
         $('#add-ingredient').on('click', function () {
             let row = `
                 <div class="row mb-3 row-ingredient">
@@ -225,6 +298,7 @@
                 delay: 250
             });
         });
+        //Evenement au clic du mot clé
         $('#add-tag').on('click', function () {
             let row = `
                 <div class="row mb-3 row-tag">

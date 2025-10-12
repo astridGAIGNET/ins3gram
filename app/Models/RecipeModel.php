@@ -194,6 +194,12 @@ class RecipeModel extends Model
                 $this->whereIn('tag_recipe.id_recipe', $tagIds);
                 $this->having('COUNT(DISTINCT tag_recipe.id_tag) >=', count($tagIds));
             }
+            // Filtre note moyenne (SIMPLIFIÉ - pas de JOIN car déjà fait dans getAllRecipes)
+            if (isset($filters['score']) && $filters['score'] > 0) {
+                // Le score est déjà calculé dans getAllRecipes avec AVG(score)
+                // On filtre simplement sur cette moyenne
+                $this->having('score >=', (float)$filters['score']);
+            }
             return $this;
     }
 

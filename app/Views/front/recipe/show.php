@@ -14,19 +14,19 @@
 </div>
 <div class="container-lg">
     <div class="row bg-secondary-subtle py-3">
+        <!-- L'utilisateur est connecté : afficher les fonctionnalités -->
+        <?php /* if (session()->get('user')): */ ?>
         <!-- START: OPINION -->
         <div class="col-md-3 text-center">
             <!-- SYSTEME DE NOTATION ETOILES-->
             <h5>Notez cette recette :</h5>
-
             <!-- SYSTEME DE NOTATION ETOILES-->
-            <div class="star-rating justify-content-center">
+            <div data-value="0" id="scoreOpinion" class="star-rating justify-content-center">
                 <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <input type="radio" name="star-rating" id="star<?= $i ?>" value="<?= $i ?>"/>
-                    <label for="star<?= $i ?>">&#9734;</label>
+                    <i data-value="<?= $i ?>" class="far fa-xl fa-star"></i>
                 <?php endfor; ?>
             </div>
-            <p class="mt-3">Note sélectionnée : <span id="rating-value">0</span> / 5</p>
+            <p class="mt-3">Note sélectionnée : <span id="scoreValue">0</span> / 5</p>
         </div>
         <!-- END: OPINION -->
         <div class="col-md-6 text-center align-self-center">
@@ -48,15 +48,28 @@
                 <!-- END: FAVORITE-->
                 <!-- START: SHARE-->
                 <div class="col col-lg-2">
-                        <span class="">
+                    <span class="">
                         <i class="fa-solid fa-share-nodes fa-2x"></i>
                     </span>
                 </div>
                 <!-- END: SHARE-->
             </div>
         </div>
-        <div class="col-md-3">
+        <!-- START: COMMENTER LA RECETTE -->
+        <div class="col-md-3 text-center">
+            <h5>Commentez cette recette :</h5>
+            <span>
+                <button id="btn-comment" type="button" class="btn btn-outline-dark mt-2">Cliquez ici</button>
+            </span>
         </div>
+        <!-- END: COMMENTER LA RECETTE -->
+        <?php /* else: ?>
+            <!-- L'utilisateur n'est pas connecté : afficher un message -->
+            <div class="col-12 text-center">
+                <p class="mb-2">Vous devez être connecté</p>
+                <a href="<?= base_url('sign-in'); ?>" class="btn btn-dark">Se connecter</a>
+            </div>
+        <?php endif; */?>
     </div>
 </div>
 <!-- START: TAGS-->
@@ -206,75 +219,150 @@
         main.mount();
         thumbnails.mount();
     })
-    //LES ETOILES
-    const ratingInputs = document.querySelectorAll('input[name="star-rating"]');
-    const ratingLabels = document.querySelectorAll('.star-rating label');
-    const ratingValue = document.getElementById('rating-value');
-    let currentRating = 0;
+    // Vérifie si l'utilisateur est connecté
+    var session_user = <?= session()->get('user') ? 'true' : 'false' ?>;
+    //LES ETOILES - Vérification au clic
+    $('#scoreOpinion').on('click', '.fa-star', function(){
+        if (!session_user) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Connexion requise',
+                text: 'Vous devez être connecté pour noter cette recette',
+                confirmButtonColor: '#000',
+                confirmButtonText: 'Se connecter',
+                showCancelButton: true,
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '<?= base_url('sign-in') ?>';
+                }
+            });
+            return;
+        }
+        // Si connecté, enregistrer la note ici
+        var value = $(this).data('value');
+        console.log('Note enregistrée : ' + value);
+        // TODO: envoyer la note en AJAX
+    });
 
-    // Fonction pour mettre à jour l'affichage des étoiles
-    function updateStars(rating) {
-        ratingLabels.forEach((label, index) => {
-            if (index < rating) {
-                label.textContent = '★'; // Étoile pleine
-            } else {
-                label.textContent = '☆'; // Étoile vide
+    // LES ETOILES - Survol (mouseenter) - séparé du clic !
+    $('#scoreOpinion').on('mouseenter', '.fa-star', function(){
+        if (!session_user) {
+            return; // Si pas connecté, ne rien faire au survol
+        }
+
+        var value = $(this).data('value');
+        var stars = '';
+
+        for(i = 0; i < value; i++) {
+            stars += `<i data-value="${i+1}" class="fas fa-xl fa-star"></i>`;
+        }
+        for(i = value; i < 5; i++) {
+            stars += `<i data-value="${i+1}" class="far fa-xl fa-star"></i>`;
+        }
+
+        $('#scoreOpinion').html(stars);
+        $('#scoreOpinion').data('value', value);
+        $('#scoreValue').text(value);
+    });
+
+    // Clic n'importe où dans la zone autour (sauf sur les étoiles)
+    $('.container-lg').on('click', function(e){
+        if (!$(e.target).closest('#scoreOpinion').length) {
+            var stars = '';
+            for(i = 0; i < 5; i++) {
+                stars += `<i data-value="${i+1}" class="far fa-xl fa-star"></i>`;
+            }
+            $('#scoreOpinion').html(stars);
+            $('#scoreOpinion').data('value', 0);
+            $('#scoreValue').text(0);
+            $('#scoreInput').remove();
+        }
+    });
+
+    //FAVORITE (LIKE)
+    $('#favorite').on('click', function(e){
+        if (!session_user) {
+            e.preventDefault();
+            Swal.fire({
+                icon: 'warning',
+                title: 'Connexion requise',
+                text: 'Vous devez être connecté pour aimer cette recette',
+                confirmButtonColor: '#000',
+                confirmButtonText: 'Se connecter',
+                showCancelButton: true,
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '<?= base_url('sign-in') ?>';
+                }
+            });
+            return false;
+        }
+
+        // Si connecté, gérer le like
+        if (this.checked) {
+            $('#heart-label').text('♥');
+            console.log('Recette likée');
+            // TODO: envoyer le like en AJAX
+        } else {
+            $('#heart-label').text('♡');
+            console.log('Like retiré');
+            // TODO: retirer le like en AJAX
+        }
+    });
+    // BOUTON COMMENTER
+    $('#btn-comment').on('click', async function(){
+        if (!session_user) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Connexion requise',
+                text: 'Vous devez être connecté pour commenter cette recette',
+                confirmButtonColor: '#000',
+                confirmButtonText: 'Se connecter',
+                showCancelButton: true,
+                cancelButtonText: 'Annuler'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '<?= base_url('sign-in') ?>';
+                }
+            });
+            return;
+        }
+
+        // Si connecté, afficher le SweetAlert avec textarea
+        const { value: text } = await Swal.fire({
+            title: 'Commentez cette recette',
+            input: "textarea",
+            inputLabel: "Votre commentaire",
+            inputPlaceholder: "Écrivez votre commentaire ici...",
+            inputAttributes: {
+                "aria-label": "Écrivez votre commentaire ici"
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Envoyer',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#000',
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Vous devez écrire quelque chose !';
+                }
             }
         });
-    }
 
-    // Au clic : enregistrer la note
-    ratingInputs.forEach((input, index) => {
-        input.addEventListener('change', function () {
-            currentRating = parseInt(this.value);
-            ratingValue.textContent = currentRating;
-            updateStars(currentRating);
-        });
-    });
-
-    // Au survol : prévisualiser
-    ratingLabels.forEach((label, index) => {
-        label.addEventListener('mouseenter', function () {
-            updateStars(index + 1);
-        });
-    });
-
-    // Quand on quitte la zone : revenir à la note enregistrée
-    document.querySelector('.star-rating').addEventListener('mouseleave', function () {
-        updateStars(currentRating);
-    });
-
-    //OPINION (LIKE)
-    const opinionInput = document.getElementById('opinion');
-    const heartLabel = document.getElementById('heart-label');
-
-    opinionInput.addEventListener('change', function () {
-        if (this.checked) {
-            heartLabel.textContent = '♥'; // Cœur plein
-        } else {
-            heartLabel.textContent = '♡'; // Cœur vide
+        if (text) {
+            console.log('Commentaire:', text);
+            // TODO: Envoyer le commentaire en AJAX
+            Swal.fire({
+                icon: 'success',
+                title: 'Commentaire envoyé !',
+                text: 'Merci pour votre commentaire',
+                confirmButtonColor: '#000'
+            });
         }
     });
 </script>
 <style>
-    .star-rating {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-        gap: 5px;
-    }
-
-    .star-rating input {
-        display: none;
-    }
-
-    .star-rating label {
-        font-size: 25px;
-        color: #000;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
     .favorite {
         display: flex;
         align-items: center;
