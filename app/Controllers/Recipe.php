@@ -15,9 +15,13 @@ class Recipe extends BaseController
             'alcool' => $this->request->getGet('alcool'),
             'ingredients' => $this->request->getGet('ingredients'),
             'tags' => $this->request->getGet('tags'),
+            'score' => $this->request->getGet('score'),
             'sort' => $this->request->getGet('sort'),
             'search' => $this->request->getGet('search'),
         ];
+        // DEBUG : Afficher les filtres reçus
+        log_message('debug', 'Filtres reçus: ' . json_encode($filters));
+
         if (!empty($filters['ingredients'])) $filters['ingredients'] = array_unique($filters['ingredients']);
         if (!empty($filters['tags'])) $filters['tags'] = array_unique($filters['tags']);
         // Paramètres de tri et pagination

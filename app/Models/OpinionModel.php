@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Traits\DataTableTrait;
 use CodeIgniter\Model;
 
 class OpinionModel extends Model
 {
+    use DataTableTrait;
+
     protected $table = 'opinion';
     protected $primaryKey = 'id';
     protected $useAutoIncrement = true;
