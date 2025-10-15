@@ -51,6 +51,50 @@ class OpinionModel extends Model
             'integer'  => 'L’ID de l’utilisateur doit être un nombre.',
         ],
     ];
+
+    function insertOrUpdateScore($id_recipe, $id_user, $score = null) {
+        $opinion = $this->select('COUNT(id) as count')->where('id_recipe', $id_recipe)->where('id_user', $id_user)->first();
+        if ($opinion['count'] == 0) {
+            //insert
+            $id = $this->insert([
+                'id_recipe' => $id_recipe,
+                'id_user' => $id_user,
+                'score' => $score
+            ]);
+            return ['type' => 'insert', 'id' => $id];
+        } else {
+            //update
+            $result = $this->where('id_recipe', $id_recipe)->where('id_user', $id_user)->set('score', $score)->update();
+            return ['type' => 'update', 'success' => $result];
+        }
+        return ['type' => 'error'];
+    }
+
+    public function getScore($id_recipe, $id_user) {
+        $opinion = $this->where('id_recipe', $id_recipe)
+            ->where('id_user', $id_user)
+            ->first();
+
+        return $opinion ? $opinion['score'] : null; //récupère le score OU null
+    }
+
+    function insertOrUpdateComments($id_recipe, $id_user, $comments = null) {
+        $opinion = $this->select('COUNT(id) as count')->where('id_recipe', $id_recipe)->where('id_user', $id_user)->first();
+        if ($opinion['count'] == 0) {
+            //insert
+            $id = $this->insert([
+                'id_recipe' => $id_recipe,
+                'id_user' => $id_user,
+                'comments' => $comments,
+            ]);
+            return ['type' => 'insert', 'id' => $id];
+        } else {
+            //update
+            $result = $this->where('id_recipe', $id_recipe)->where('id_user', $id_user)->set('comments', $comments)->update();
+            return ['type' => 'update', 'success' => $result];
+        }
+        return ['type' => 'error'];
+    }
     protected $skipValidation = false;
     protected $cleanValidationRules = true;
 
