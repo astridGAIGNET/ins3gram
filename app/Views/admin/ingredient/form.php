@@ -88,7 +88,7 @@
                                 <label for="mea" class="form-label">Image Principale</label>
                                 <?php if (isset($ingredient['mea']) && !empty($ingredient['mea'])) : ?>
                                     <div class="text-center mb-3 ">
-                                        <img class="img-thumbnail" src="<?= base_url($ingredient['mea']['file_path']); ?>">
+                                        <img class="img-thumbnail" src="<?= $ingredient['mea']->getUrl(); ?>">
                                     </div>
                                 <?php endif; ?>
                                 <input id="mea" type="file" name="mea" class="form-control">
