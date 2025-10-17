@@ -1,8 +1,8 @@
 <div class="row">
     <div class="col">
         <div class="position-relative">
-            <?php if (isset($recipe['mea']['file_path'])) : ?>
-                <img src="<?= base_url($recipe['mea']['file_path']); ?>" class="img-fluid recipe-img-mea">
+            <?php if (isset($recipe['mea'])) : ?>
+                <img src="<?= $recipe['mea']->getUrl(); ?>" class="img-fluid recipe-img-mea">
             <?php endif; ?>
             <div class="position-absolute top-0 start-0 bg-black w-100 h-100 opacity-25"></div>
             <div class="position-absolute top-50 start-50 translate-middle text-white text-center">
@@ -95,9 +95,11 @@
 <!-- START: INGREDIENTS -->
 <div class="container-lg">
     <div class="row bg-secondary-subtle py-4">
+        <div class="col-12 ms-3">
         <h4>Ingrédients :</h4>
+        </div>
         <?php foreach ($recipe['ingredients'] as $ingredient): ?>
-            <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3">
+            <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3 ms-3">
                 <div class="card ingredient h-100 shadow">
                     <div class="card-img-top d-flex align-items-center justify-content-center bg-light"
                          style="height: 200px;">
@@ -131,8 +133,8 @@
                     <ul class="splide__list">
                         <?php foreach ($recipe['images'] as $image) : ?>
                             <li class="splide__slide">
-                                <a href="<?= base_url($image['file_path']); ?>" data-lightbox="mainslider">
-                                    <img class="" src="<?= base_url($image['file_path']); ?>">
+                                <a href="<?= base_url($image->file_path); ?>" data-lightbox="mainslider">
+                                    <img class="" src="<?= base_url($image->file_path); ?>">
                                 </a>
                             </li>
                         <?php endforeach; ?>
@@ -144,7 +146,7 @@
                     <ul class="splide__list">
                         <?php foreach ($recipe['images'] as $image) : ?>
                             <li class="splide__slide">
-                                <img class="img-thumbnail rounded" src="<?= base_url($image['file_path']); ?>">
+                                <img class="img-thumbnail rounded" src="<?= base_url($image->file_path); ?>">
                             </li>
                         <?php endforeach; ?>
                     </ul>
@@ -153,8 +155,13 @@
         </div>
     <?php endif; ?>
     <div class="col">
-        <div class="d-flex flex-column justify-content-center h-100 p-3 ">
-            <?= $recipe['description']; ?>
+        <div class="description border border-dark border-2 rounded-3 py-lg-5 ">
+            <div class="col mt-3">
+                <h4>Description :</h4>
+            </div>
+            <div class="d-flex flex-column justify-content-center h-100">
+                <?= $recipe['description']; ?>
+            </div>
         </div>
     </div>
 </div>
@@ -437,5 +444,11 @@
 
     #navbar-step .nav-link:hover {
         color: #000;
+    }
+    .description {
+        padding: 20px 50px;
+        margin-top: 150px;
+        margin-right: 50px;
+        margin-left: 50px;
     }
 </style>

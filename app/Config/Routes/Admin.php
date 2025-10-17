@@ -11,6 +11,7 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
         $routes->post('update', 'User::update');
         $routes->post('insert', 'User::insert');
         $routes->post('switch-active', 'User::switchActive');
+        $routes->post('delete-avatar', 'User::deleteAvatar');
     });
 
     $routes->group('user-permission', function ($routes) {
@@ -77,5 +78,9 @@ $routes->group('admin', ['namespace' => 'App\Controllers\Admin', 'filter' => 'au
         $routes->post('update', 'Substitute::update');
         $routes->post('insert', 'Substitute::insert');
         $routes->post('delete', 'Substitute::delete');
+    });
+
+    $routes->group('media', function ($routes) {
+        $routes->get('/', 'Media::index');
     });
 });

@@ -80,15 +80,42 @@ class User extends BaseController
         // Remplir notre user avec les nouvelles données du formulaire
         $user->fill($data);
 
-        // Sauvegarde (CodeIgniter fera un UPDATE car l'ID est présent)
-        if ($userModel->save($user)) {
-            $this->success('Utilisateur mis à jour avec succès.');
-            return $this->redirect('/admin/user/' . $user->id);
-        } else {
-            $this->error('Erreur');
-            return $this->redirect('/admin/user/' . $user->id);
+        // Gestion de l'avatar
+        $avatarFile = $this->request->getFile('avatar');
+        if ($avatarFile && $avatarFile->isValid() && !$avatarFile->hasMoved()) {
+            // Utilisation du helper upload_file
+
+            $result = upload_file(
+                $avatarFile,
+                'avatars',                    // Sous-dossier
+                $user->username,              // Nom personnalisé
+                [
+                    'entity_id' => $user->id,
+                    'entity_type' => 'user',
+                    'title' => 'Avatar de ' . $user->username,
+                    'alt' => 'Photo de profil'
+                ]
+            );
+            if ($result instanceof \App\Entities\Media) {
+                $this->success('Avatar mis à jour avec succès.');
+            } else {
+                $this->error($result['message']);
+            }
         }
+
+        // Sauvegarde (CodeIgniter fera un UPDATE car l'ID est présent)
+        if ($user->hasChanged()) {
+            if ($userModel->save($user)) {
+                $this->success('Utilisateur mis à jour avec succès.');
+            } else {
+                $this->error('Erreur');
+            }
+        } else {
+            $this->message('Aucune modification apportée aux infos de l\'utilisateur.');
+        }
+        return $this->redirect('/admin/user/' . $user->id);
     }
+
 
     public function insert() {
         $userModel = model('UserModel');
@@ -148,6 +175,30 @@ class User extends BaseController
                     'message' => 'Erreur lors de l\'activation'
                 ]);
             }
+        }
+    }
+
+    public function deleteAvatar()
+    {
+        $id = $this->request->getPost('id_user');
+        $user = model('UserModel')->find($id);
+        if (!$user) {
+            return $this->response->setJSON(
+                [
+                    'success' => false,
+                    'message' => 'Utilisateur inexistant'
+                ]);
+        }
+        if($user->deleteAvatar()){
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Avatar supprimé avec succès',
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Erreur lors de la suppression'
+            ]);
         }
     }
 }
