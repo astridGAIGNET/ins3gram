@@ -11,7 +11,7 @@
                     <label for="name">Nom de la marque</label>
                 </div>
                 <div class="mt-3">
-                    <input type="file" class="form-control" name="image">
+                    <input type="file" name="image" class="form-control">
                 </div>
             </div>
             <div class="card-footer text-end">
@@ -30,6 +30,7 @@
                     <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Logo</th>
                         <th>Nom de la marque</th>
                         <th>Actions</th>
                     </tr>
@@ -75,6 +76,19 @@
             },
             columns: [
                 { data: 'id' },
+                {
+                    data: null,
+                    orderable: false,
+                    render: function(data, type, row) {
+                        if(row.logo_url) {
+                            return `<img style="height:30px;" src='${baseUrl}/${row.logo_url}'>
+                            `;
+                        } else {
+                            return `<img style="height:30px;" src='${baseUrl}/assets/img/no-img.png'>
+                            `;
+                        }
+                    }
+                },
                 { data: 'name' },
                 {
                     data: null,
