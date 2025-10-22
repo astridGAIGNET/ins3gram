@@ -9,10 +9,10 @@ class MediaModel extends Model
     protected $table            = 'media';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
-    protected $returnType       = 'App\Entities\Media';
+    protected $returnType       = 'App\Entities\Media'; // ← Modifié pour utiliser l'Entity
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['file_path', 'entity_id', 'entity_type', 'title', 'alt'];
+    protected $allowedFields    = ['file_path','entity_id', 'entity_type','title','alt'];
 
     // Dates
     protected $useTimestamps = true;
@@ -21,11 +21,10 @@ class MediaModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    // Validation
     protected $validationRules = [
         'file_path'   => 'required|string|is_unique[media.file_path,id,{id}]',
         'entity_id'   => 'required|integer',
-        'entity_type' => 'required|in_list[user,recipe, recipe_mea, step,ingredient,brand]',
+        'entity_type' => 'required|in_list[user,recipe,recipe_mea,step,ingredient,brand]',
         'title'       => 'permit_empty|max_length[255]',
         'alt'         => 'permit_empty|max_length[255]',
     ];
@@ -36,12 +35,12 @@ class MediaModel extends Model
             'is_unique' => 'Ce fichier existe déjà.',
         ],
         'entity_id' => [
-            'required' => 'L’ID de l’entité est obligatoire.',
-            'integer'  => 'L’ID de l’entité doit être un nombre.',
+            'required' => 'L\'ID de l\'entité est obligatoire.',
+            'integer'  => 'L\'ID de l\'entité doit être un nombre.',
         ],
         'entity_type' => [
-            'required' => 'Le type d’entité est obligatoire.',
-            'in_list'  => 'Le type d’entité doit être parmi : user, recipe, step, ingredient ou brand.',
+            'required' => 'Le type d\'entité est obligatoire.',
+            'in_list'  => 'Le type d\'entité doit être parmi : user, recipe, step, ingredient ou brand.',
         ],
         'title' => [
             'max_length' => 'Le titre ne peut pas dépasser 255 caractères.',
@@ -50,12 +49,6 @@ class MediaModel extends Model
             'max_length' => 'Le texte alternatif ne peut pas dépasser 255 caractères.',
         ],
     ];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
-
-    // Callbacks
-
-    protected $beforeDelete   = [];
 
     /**
      * Supprime un média (fichier + BDD) avec transaction
@@ -107,6 +100,20 @@ class MediaModel extends Model
             log_message('error', 'Erreur suppression média : ' . $e->getMessage());
             return false;
         }
+    }
+
+    public function getMedias($page = 1, $perPage = 10, $entity_type = null) {
+        if($entity_type != null) {
+            $this->where('entity_type', $entity_type);
+            if($entity_type == 'recipe') {
+                $this->OrWhere('entity_type', 'recipe_mea');
+            }
+        }
+        $data = $this->paginate($perPage, 'default', $page);
+        return [
+            'data' => $data,
+            'pager' => $this->pager
+        ];
     }
 
 }

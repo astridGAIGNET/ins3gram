@@ -11,6 +11,11 @@
     "icon": "<i class=\"nav-icon fas fa-martini-glass-citrus\"></i>",
     "class": ""
   },
+  "media": {
+    "title": "Médias",
+    "url": "/admin/media",
+    "icon": "<i class=\"nav-icon fas fa-images\"></i>"
+  },
   "tag": {
     "title": "Mots clés",
     "url": "/admin/tag",
