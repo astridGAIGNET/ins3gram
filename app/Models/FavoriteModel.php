@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
-
+use App\Traits\DataTableTrait;
 class FavoriteModel extends Model
 {
+    use DataTableTrait;
+
     protected $table            = 'favorite';
     protected $primaryKey       = 'id_user';
     protected $useAutoIncrement = false;
@@ -45,5 +47,17 @@ class FavoriteModel extends Model
             return true;
         }
         return false;
+    }
+
+    public function getFavoritesByRecipe($id_recipe) {
+        return $this->select('favorite.*, user.username')
+            ->join('user', 'user.id = favorite.id_user')
+            ->where('favorite.id_recipe', $id_recipe)
+            ->findAll();
+    }
+
+    public function countFavoritesByRecipe($id_recipe) {
+        return $this->where('id_recipe', $id_recipe)
+            ->countAllResults();
     }
 }

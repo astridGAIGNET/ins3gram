@@ -48,7 +48,8 @@ class Recipe extends BaseController
     }
 
 
-    public function show($slug) {
+    public function show($slug)
+    {
         $rm = Model('RecipeModel');
         $recipe = $rm->getFullRecipe(null, $slug);
 
@@ -57,5 +58,6 @@ class Recipe extends BaseController
             return $this->view('front/recipe/show', ['recipe' => $recipe], false);
         }
         return $this->view('templates/404.php', [], false);
+
     }
 }

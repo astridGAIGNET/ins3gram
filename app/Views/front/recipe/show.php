@@ -204,6 +204,41 @@
     </div>
 </div>
 <!-- END: ETAPES -->
+<!-- START: COMMENTAIRES -->
+<div class="container-lg mt-3">
+    <div class="row py-4">
+        <div class="col-12 ms-3">
+            <h4>Commentaires :</h4>
+        </div>
+        <?php if (!empty($recipe['comments'])) : ?>
+            <?php foreach ($recipe['comments'] as $opinion) : ?>
+                <div class="col-12 mb-3">
+                    <div class="card text-center">
+                        <div class="card-header">
+                            <?= esc($opinion['username']); ?>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text"><?= esc($opinion['comments']); ?></p>
+                        </div>
+                        <div class="card-footer text-body-secondary">
+                            <?= date('d/m/Y', strtotime($opinion['created_at']));
+                            if($session_user != null && $session_user->id == $opinion['id_user']) : ?>
+                                <span>
+                                    <button class="btn-comment-edit btn btn-sm btn-outline-dark" data-comment="<?= htmlspecialchars($opinion['comments'] ?? ''); ?>" type="button">Modifier</button>
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php else : ?>
+            <div class="col-12">
+                <p class="text-muted">Aucun commentaire pour le moment. Soyez le premier à commenter!</p>
+            </div>
+        <?php endif; ?>
+    </div>
+</div>
+<!-- END: COMMENTAIRES -->
 <script>
     $(document).ready(function () {
         var main = new Splide('#main-slider', {
@@ -327,19 +362,22 @@
         });
 
         //COMMENTS
-        $('#btn-comment').on('click', async function () {
+        $('#btn-comment, .btn-comment-edit').on('click', async function () {
             <?php if ($session_user != null) : ?>
+            const isEdit = $(this).attr('id') === 'btn-comment-edit';
+            const existingComment = $(this).data('comment') || ''; // Récupérer depuis l'attribut data
             // Si connecté, afficher le SweetAlert avec textarea
             const {value: text} = await Swal.fire({
-                title: 'Commentez cette recette',
+                title: isEdit ? 'Modifier votre commentaire' : 'Commentez cette recette',
                 input: "textarea",
                 inputLabel: "Votre commentaire",
+                inputValue: existingComment,
                 inputPlaceholder: "Écrivez votre commentaire ici...",
                 inputAttributes: {
                     "aria-label": "Écrivez votre commentaire ici"
                 },
                 showCancelButton: true,
-                confirmButtonText: 'Envoyer',
+                confirmButtonText: isEdit ? 'Modifier' : 'Envoyer',
                 cancelButtonText: 'Annuler',
                 confirmButtonColor: '#000',
                 inputValidator: (value) => {
@@ -369,7 +407,7 @@
 
                 Swal.fire({
                     icon: 'success',
-                    title: 'Commentaire envoyé !',
+                    title: isEdit ? 'Commentaire modifié !' : 'Commentaire envoyé !',
                     text: 'Merci pour votre commentaire',
                     confirmButtonColor: '#000'
                 });
