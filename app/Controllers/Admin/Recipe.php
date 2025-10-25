@@ -3,6 +3,7 @@
 namespace App\Controllers\Admin;
 
 use App\Controllers\BaseController;
+use App\Entities\Media;
 use CodeIgniter\HTTP\ResponseInterface;
 
 class Recipe extends BaseController
@@ -41,9 +42,21 @@ class Recipe extends BaseController
 
         //Récupération des mots clés (pour les afficher dans l'onglet)
         $tags = Model('TagModel')->findAll();
+        //Récupération des favoris
+        $favoriteModel = Model('FavoriteModel');
+        $favoritesData = $favoriteModel->getFavoritesByRecipe($id_recipe);
+        // On créé des objets User pour chaque favori
+        $userModel = Model('UserModel');
+        $favorites = [];
+        foreach($favoritesData as $fav) {
+            $favorites[] = [
+                'username' => $fav['username'],
+                'user' => $userModel->find($fav['id_user']) // Objet User avec toutes les méthodes
+            ];
+        }
 
         //Affichage de la vue avec les mots clés et la recette complète en variable envoyés
-        return $this->view('admin/recipe/form', ['tags' => $tags, 'recipe' => $recipe]);
+        return $this->view('admin/recipe/form', ['tags' => $tags, 'recipe' => $recipe, 'favorites' => $favorites]);
     }
 
     public function insert()
@@ -365,6 +378,11 @@ class Recipe extends BaseController
         );
     }
 
+    public function getComments($id) {
+        $opm = Model('OpinionModel');
+        $opinion = $opm->find($id);
+        return $this->response->setJSON(['opinion' => $opinion['comments']]);
+    }
     public function saveComments () {
         $data = $this->request->getPost();
         $opm = Model('OpinionModel');

@@ -15,5 +15,6 @@ $routes->group('api', ['namespace' => 'App\Controllers\Admin', 'filter' => 'auth
         $routes->post('score', 'Recipe::saveScore');
         $routes->post('favorite', 'Recipe::switchFavorite');
         $routes->post('comments', 'Recipe::saveComments');
+        $routes->get('get-comments', 'Recipe::getComments');
     });
 });

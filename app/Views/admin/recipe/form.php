@@ -67,12 +67,12 @@ endif;
                         <li class="nav-item">
                             <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#opinion-tab-pane">Commentaires
                                 <span id="badge-opinion"
-                                      class="badge rounded-pill text-bg-primary"><?= (isset($recipe['opinions'])) ? count($recipe['opinions']) : '0'; ?></span></a>
+                                      class="badge rounded-pill text-bg-primary"><?= (isset($recipe['comments'])) ? count($recipe['comments']) : '0'; ?></span></a>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link" data-bs-toggle="tab" data-bs-target="#fav-tab-pane">Favoris
                                 <span id="badge-fav"
-                                      class="badge rounded-pill text-bg-primary"><?= (isset($recipe['fav'])) ? count($recipe['fav']) : '0'; ?></span></a>
+                                      class="badge rounded-pill text-bg-primary"><?= (isset($favorites)) ? count($favorites) : '0'; ?></span></a>
                         </li>
                     <?php endif; ?>
                 </ul>
@@ -242,12 +242,48 @@ endif;
                     <?php if (isset($recipe)) : ?>
                         <!--START: COMMENTAIRES -->
                         <div class="tab-pane fade" id="opinion-tab-pane" role="tabpanel">
-                            COMMENTAIRES
+                            <?php if (!empty($recipe['comments'])) : ?>
+                                <?php foreach ($recipe['comments'] as $comment) : ?>
+                                    <div class="card text-center mb-3">
+                                        <div class="card-header">
+                                            <?= esc($comment['username']); ?>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text"><?= esc($comment['comments']); ?></p>
+                                        </div>
+                                        <div class="card-footer text-body-secondary">
+                                            <?= date('d/m/Y', strtotime($comment['created_at'])); ?>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                         <!--END: COMMENTAIRES -->
                         <!--START: FAVORIS -->
                         <div class="tab-pane fade" id="fav-tab-pane" role="tabpanel">
-                            FAVORIS
+                            <?php if(!empty($favorites)): ?>
+                                <div class="favorites-section">
+                                    <h6>Recette likée par :</h6>
+                                    <ul class="list-unstyled">
+                                        <?php foreach($favorites as $favorite): ?>
+                                            <li class="mb-2 d-flex align-items-center">
+                                                <?php if ($favorite['user']->hasAvatar()): ?>
+                                                    <img class="rounded-circle img-thumbnail me-2"
+                                                         src="<?= $favorite['user']->getAvatarUrl(); ?>"
+                                                         width="48"
+                                                         height="48"
+                                                         alt="avatar de <?= esc($favorite['username']) ?>">
+                                                <?php else: ?>
+                                                    <i class="icon icon-lg theme-icon-active fa-solid fa-user me-2"></i>
+                                                <?php endif; ?>
+                                                <span><?= esc($favorite['username']) ?></span>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            <?php else: ?>
+                                <p>Aucun like pour cette recette.</p>
+                            <?php endif; ?>
                         </div>
                         <!--END: FAVORIS -->
                     <?php endif; ?>

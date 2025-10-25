@@ -99,6 +99,12 @@ class User extends Entity
         return $opm->getScore($recipeId, $this->attributes['id']);
     }
 
+    public function getComments(int $recipeId) {
+        $opm = model('OpinionModel');
+        return $opm->getComments($recipeId, $this->attributes['id']);
+    }
+
+
     /**
      * Récupère l'avatar de l'utilisateur
      *

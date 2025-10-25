@@ -101,6 +101,8 @@ class RecipeModel extends Model
         //Récupération des étapes de la recette
         $steps = Model('StepModel')->where('id_recipe', $id_recipe)->orderBy('order', 'ASC')->findAll();
         $recipe['steps'] = $steps; //on ajoute à notre recette
+        //Récupération des commentaires
+        $recipe['comments'] = Model('OpinionModel')->getCommentsByRecipe($id_recipe, 6);
 
         return $recipe;
     }
