@@ -25,7 +25,8 @@
             <!-- SYSTEME DE NOTATION ETOILES-->
             <div data-value="<?= $userScore ?? 0 ?>" id="scoreOpinion" class="star-rating justify-content-center mt-2">
                 <?php for ($i = 1; $i <= 5; $i++): ?>
-                    <i data-value="<?= $i ?>" class="<?= ($userScore && $i <= $userScore) ? 'fas' : 'far' ?> fa-xl fa-star"></i>
+                    <i data-value="<?= $i ?>"
+                       class="<?= ($userScore && $i <= $userScore) ? 'fas' : 'far' ?> fa-xl fa-star"></i>
                 <?php endfor; ?>
             </div>
             <p class="mt-3">Note sélectionnée : <span id="scoreValue"><?= $userScore ?? 0 ?></span> / 5</p>
@@ -96,7 +97,7 @@
 <div class="container-lg">
     <div class="row bg-secondary-subtle py-4">
         <div class="col-12 ms-3">
-        <h4>Ingrédients :</h4>
+            <h4>Ingrédients :</h4>
         </div>
         <?php foreach ($recipe['ingredients'] as $ingredient): ?>
             <div class="col-12 col-sm-6 col-md-4 col-lg-2 mb-3 ms-3">
@@ -220,13 +221,23 @@
                         <div class="card-body">
                             <p class="card-text"><?= esc($opinion['comments']); ?></p>
                         </div>
-                        <div class="card-footer text-body-secondary">
-                            <?= date('d/m/Y', strtotime($opinion['created_at']));
-                            if($session_user != null && $session_user->id == $opinion['id_user']) : ?>
-                                <span>
-                                    <button class="btn-comment-edit btn btn-sm btn-outline-dark" data-comment="<?= htmlspecialchars($opinion['comments'] ?? ''); ?>" type="button">Modifier</button>
-                                </span>
-                            <?php endif; ?>
+                        <div class="card-footer text-body-secondary d-flex justify-content-between align-items-center">
+                            <!-- Espace vide à gauche pour équilibrer -->
+                            <span style="width: 80px;"></span>
+                            <!-- Date au centre -->
+                            <span>
+                                <?= date('d/m/Y', strtotime($opinion['created_at'])); ?>
+                            </span>
+                            <!-- Bouton à droite -->
+                            <span style="width: 80px; text-align: right;">
+                                <?php if ($session_user != null && $session_user->id == $opinion['id_user']) : ?>
+                                    <button class="btn-comment-edit btn btn-sm btn-outline-dark"
+                                            data-comment="<?= htmlspecialchars($opinion['comments'] ?? ''); ?>"
+                                            type="button">
+                                        Modifier
+                                    </button>
+                                <?php endif; ?>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -441,8 +452,9 @@
                 }
             });
         }
+
         // SHARE : les liens sont masqués
-        $('#share').on('click', function() {
+        $('#share').on('click', function () {
             document.getElementById('socialShare').style.display = 'block';
         });
     })
@@ -457,14 +469,17 @@
         scale: 1.1;
         cursor: pointer;
     }
+
     .fa-file:hover {
         scale: 1.1;
         cursor: pointer;
     }
+
     .fa-share-nodes:hover {
         scale: 1.1;
         cursor: pointer;
     }
+
     .socialShare {
         display: none;
         margin-top: 6px;
@@ -483,6 +498,7 @@
     #navbar-step .nav-link:hover {
         color: #000;
     }
+
     .description {
         padding: 20px 50px;
         margin-top: 150px;
