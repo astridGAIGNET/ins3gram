@@ -4,9 +4,15 @@
             <img class="img-fluid" src="<?= base_url('assets/img/logo-32.png'); ?>" alt="logo"> Ins3gram
         </a>
         <div class="dropdown ms-auto me-3 d-lg-none">
-            <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">
-                <i class="fas fa-user"></i>
-            </a>
+            <?php if ($session_user) : ?>
+                <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">
+                    <?php if ($session_user->hasAvatar()) : ?>
+                        <img class="rounded-circle img-thumbnail" src="<?= $session_user->getAvatarUrl(); ?>" width="40" height="40" alt="avatar">
+                    <?php else : ?>
+                        <i class="icon icon-lg theme-icon-active fa-solid fa-user"></i>
+                    <?php endif; ?>
+                </a>
+            <?php endif; ?>
             <ul class="dropdown-menu dropdown-menu-end">
                 <?php
                 if(isset($session_user)) :
@@ -80,9 +86,15 @@
                     <?php }
                 } ?>
                 <li class="nav-item dropdown ms-auto d-none d-lg-block">
-                    <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">
-                        <i class="fas fa-user"></i>
-                    </a>
+                    <?php if ($session_user) : ?>
+                        <a class="dropdown-toggle nav-link" href="#" data-bs-toggle="dropdown">
+                            <?php if ($session_user->hasAvatar()) : ?>
+                                <img class="rounded-circle img-thumbnail" src="<?= $session_user->getAvatarUrl(); ?>" width="40" height="40" alt="avatar">
+                            <?php else : ?>
+                                <i class="icon icon-lg theme-icon-active fa-solid fa-user"></i>
+                            <?php endif; ?>
+                        </a>
+                    <?php endif; ?>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <?php
                         if(isset($session_user)) :
