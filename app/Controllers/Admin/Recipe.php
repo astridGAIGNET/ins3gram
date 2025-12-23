@@ -328,18 +328,18 @@ class Recipe extends BaseController
         $id = $this->request->getPost('id_recipe');
         $recipeModel = model('RecipeModel');
 
-        // Récupérer l'utilisateur (même s'il est soft deleted)
+        // Récupérer la recette (même s'il est soft deleted)
         $recipe = $recipeModel->withDeleted()->find($id);
 
         if (!$recipe) {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'Utilisateur introuvable'
+                'message' => 'Recette introuvable'
             ]);
         }
 
         if (empty($recipe['deleted_at'])) {
-            // Désactiver l'utilisateur (soft delete)
+            // Désactiver la recette (soft delete)
             $recipeModel->delete($id);
             return $this->response->setJSON([
                 'success' => true,
